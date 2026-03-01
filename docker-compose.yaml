@@ -1,21 +1,4 @@
 services:
-  ollama:
-    image: ollama/ollama
-    container_name: ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    environment:
-      - OLLAMA_FLASH_ATTENTION=1
-      - OLLAMA_KV_CACHE_TYPE=q8_0
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama:/root/.ollama
   openwebui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
