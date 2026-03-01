@@ -1,0 +1,17 @@
+llama-server \
+  -hf unsloth/MiniMax-M2.5-GGUF:UD-IQ3_XXS \
+  --alias "unsloth/MiniMax-M2.5" \
+  --ctx-size 32768 \
+  --n-gpu-layers 99 \
+  --threads 12 \
+  --batch-size 2048 \
+  --ubatch-size 512 \
+  --cache-type-k q8_0 \
+  --cache-type-v q8_0 \
+  --fit off \
+  --flash-attn on \
+  --temp 1.0 \
+  --top-p 0.95 \
+  --top-k 40 \
+  --port 8001 \
+  --jinja --mlock --no-mmap
