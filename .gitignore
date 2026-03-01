@@ -1,0 +1,21 @@
+# Environment files (may contain sensitive data)
+.env
+.env.*
+
+# Python virtual environment
+.venv/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+history.txt
