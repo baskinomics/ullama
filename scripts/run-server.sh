@@ -19,9 +19,11 @@ fi
 
 # Router Configuration
 # --models-max 1: Ensures only one model is loaded in VRAM at a time (prevents OOM on 24GB cards)
+# --port 8001: Explicitly set the server port (OpenAI-compatible API)
 ROUTER_ARGS=(
     --models-preset "$PRESET_FILE"
     --models-max 1
+    --port 8001
 )
 
 echo "=== Starting Ullama Router Server ==="
