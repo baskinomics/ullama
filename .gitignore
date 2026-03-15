@@ -19,3 +19,8 @@ Thumbs.db
 # Logs
 *.log
 history.txt
+**/*.logs.txt
+**/*-logs.txt
+
+# Ullama-specific
+task.md

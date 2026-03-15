@@ -1,15 +1,17 @@
 services:
-  openwebui:
-    image: ghcr.io/open-webui/open-webui:main
-    container_name: open-webui
-    environment:
-      - OLLAMA_BASE_URL=http://jupiter.hl:11434
-      - ENABLE_EVALUATION_ARENA_MODELS=False
-    ports:
-      - "3000:8080"
-    volumes:
-      - open-webui:/app/backend/data
+    openwebui:
+        image: ghcr.io/open-webui/open-webui:main
+        container_name: open-webui
+        environment:
+            - OPENAI_API_BASE_URL=http://host.docker.internal:8001/v1
+            - OPENAI_API_KEY=not-needed
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        ports:
+            - "3000:8080"
+        volumes:
+            - open-webui:/app/backend/data
 
 volumes:
-  ollama:
-  open-webui:
+    ollama:
+    open-webui:

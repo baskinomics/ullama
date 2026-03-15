@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Script to run unsloth/MiniMax-M2.5-GGUF model with IQ2_XXS quantization
+# Usage: ./mini-max-2.5.sh
+
 args=(
     -hf unsloth/MiniMax-M2.5-GGUF:IQ2_XXS
     --alias "unsloth/MiniMax-M2.5"

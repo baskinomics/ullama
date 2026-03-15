@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Script to run unsloth/Qwen3-Coder-Next-GGUF model with Q4_K_XL quantization
-# Usage: ./qwen3-coder-next.sh
+# Script to run unsloth/NVIDIA-Nemotron-3-Super-120B-A12B-GGUF model with UD-Q4_K_XL quantization
+# Usage: ./nemotron-3-super.sh
 
 args=(
-    -hf unsloth/Qwen3-Coder-Next-GGUF:Q4_K_XL
-    --alias "unsloth/Qwen3-Coder-Next"
-    --ctx-size 262144
+    -hf unsloth/NVIDIA-Nemotron-3-Super-120B-A12B-GGUF:UD-Q4_K_XL
+    --alias "unsloth/NVIDIA-Nemotron-3-Super-120B-A12B"
+    --ctx-size 32768
     --threads 8
     --threads-batch 16
     --cache-type-k q8_0
@@ -17,14 +17,14 @@ args=(
     --flash-attn on
     --fit on
     --seed 3407
-    --temp 1.0
+    --temp 0.6
     --top-p 0.95
-    --min-p 0.00
-    --top-k 40
+    --min-p 0.01
+    # --top-k 40
     --port 8001
     --jinja
     # Logging
-    --log-file logs.txt
+    --log-file Nemotron-3-Super-120B-A12B-logs.txt
 )
 
 # taskset -c 0-7 binds the process exclusively to physical cores 0 through 7
