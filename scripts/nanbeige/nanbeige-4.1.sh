@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Script to run Nanbeige4.1-3B-GGUF model with F16 quantization
+# Usage: ./nanbeige-4.1.sh
+
 args=(
     -hf mradermacher/Nanbeige4.1-3B-GGUF:F16
     --alias "mradermacher/Nanbeige4.1-3B"

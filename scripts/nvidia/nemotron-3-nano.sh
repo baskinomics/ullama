@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Script to run unsloth/Nemotron-3-Nano-30B-A3B-GGUF model with Q4_K_XL quantization
+# Usage: ./nemotron-3-nano.sh
+
 llama-server -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q4_K_XL \
     --alias "unsloth/Nemotron-3-Nano-30B-A3B-A3B" \
     --ctx-size 65536 \

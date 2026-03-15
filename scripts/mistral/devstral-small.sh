@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+
 # Script to run Devstral-Small-2-24B-Instruct-2512-GGUF with Q4_K_XL quantization
 # Usage: ./devstral-small.sh
 

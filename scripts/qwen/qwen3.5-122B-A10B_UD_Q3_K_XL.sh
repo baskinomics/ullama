@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Script to run unsloth/Qwen3.5-122B-A10B-GGUF model with UD-Q4_K_XL quantization
-# Usage: ./qwen3.5-122B-A10B.sh
+# Script to run unsloth/Qwen3.5-122B-A10B-GGUF model with UD-Q3_K_XL quantization
+# Usage: ./qwen3.5-122B-A10B_UD_Q3_K_XL.sh
 
 args=(
-    -hf unsloth/Qwen3.5-122B-A10B-GGUF:UD-Q4_K_XL
+    -hf unsloth/Qwen3.5-122B-A10B-GGUF:UD-Q3_K_XL
     --alias "unsloth/Qwen3.5-122B-A10B"
-    --ctx-size 131072      # [8192, 16384, 32768, 65536, 131072, 262144]
-    --threads 8            # Optimal for keeping workload on the 3D V-Cache CCD
+    --ctx-size 262144 # [32768, 65536, 131072, 262144]
+    --threads 8          # Optimal for keeping workload on the 3D V-Cache CCD
     --threads-batch 16
     # --n-gpu-layers 15    # Maximum number of layers to store in VRAM, either an exact number, 'auto', or 'all' (default: auto) ~35% offload targeting 24GB VRAM
     # --n-cpu-moe 30       # Keep the Mixture of Experts (MoE) weights of the first N layers in the CPU
