@@ -144,7 +144,36 @@ OS_TYPE=$(uname -s)
 [[ "$OS_TYPE" = "Darwin" ]] && PRESET_FILE="macos-presets.ini" || PRESET_FILE="presets.ini"
 ```
 
-## 4. Quick Reference
+## 4. Commit Message Style
+
+### Conventional Commits
+
+All commit messages should follow [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+<type>(<scope>): <subject>
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `chore`: Maintenance, configs, non-user-facing changes
+- `docs`: Documentation changes
+- `refactor`: Code restructuring without behavior changes
+- `test`: Adding or updating tests
+
+**Examples:**
+- `feat(presets): add Qwen3.5-27B reasoning-distilled model`
+- `chore(presets): move Qwen3.5-397B-A17B to macOS presets`
+- `fix(server): resolve CUDA memory allocation issue`
+
+**Guidelines:**
+- Use imperative mood: "add" not "added"
+- Lowercase subject, no period at end
+- Include scope in parentheses when applicable
+- Use bullet points with hyphens for commit body
+
+## 5. Quick Reference
 
 | Task | Command |
 |------|---------|
