@@ -63,6 +63,20 @@
             "output": 32768
           }
         },
+        "byteshape/Qwen3.5-9B-GGUF:Q5_K_S": {
+          "name": "byteshape/Qwen3.5-9B (Q5_K_S)",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
+        "Jackrong/Qwopus3.5-9B-v3-GGUF:Q8_0": {
+          "name": "Jackrong/Qwopus3.5-9B-v3 (Q8_0)",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
         "unsloth/Qwen3-Coder-Next": {
           "name": "unsloth/Qwen3-Coder-Next",
           "limit": {
@@ -149,6 +163,20 @@
         },
         "unsloth/gpt-oss-120B": {
           "name": "unsloth/gpt-oss-120B",
+          "limit": {
+            "context": 32768,
+            "output": 32768
+          }
+        },
+        "unsloth/gemma-4-31B-it-GGUF:UD-Q3_K_XL": {
+          "name": "unsloth/Gemma-4-31B (UD-Q3_K_XL)",
+          "limit": {
+            "context": 65536,
+            "output": 8192
+          }
+        },
+        "unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_XL": {
+          "name": "unsloth/gemma-4-26B-A4B (UD-Q4_K_XL)",
           "limit": {
             "context": 32768,
             "output": 32768
