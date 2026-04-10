@@ -6,10 +6,7 @@ This file provides instructions for AI agents operating in the Ullama repository
 
 ### 1.1 Build Instructions
 
-- **Build llama.cpp**: Run the provided update script:
-  ```bash
-  ./scripts/update_llama_cpp.sh
-  ```
+- **Build llama.cpp**: Run `make build` or `./scripts/update_llama_cpp.sh`
   This pulls latest llama.cpp, configures CMake with `-DGGML_CUDA=ON`, and compiles.
 
 - **Manual build** (if needed):
@@ -21,35 +18,23 @@ This file provides instructions for AI agents operating in the Ullama repository
 
 ### 1.2 Linting
 
-- **Lint all scripts**:
+- **Lint all scripts**: Run `make lint` or:
   ```bash
   find scripts/ -name "*.sh" -exec shellcheck {} +
   ```
-- **Lint a single script**:
-  ```bash
-  shellcheck scripts/run-server.sh
-  ```
+- **Lint a single script**: Run `shellcheck scripts/run-server.sh`
 
 ### 1.3 Testing
 
-- **Syntax check**:
-  ```bash
-  bash -n scripts/run-server.sh
-  ```
-- **Test a script** (safe dry-run):
-  ```bash
-  bash -n scripts/run-server.sh && scripts/run-server.sh --help 2>&1 | head -20
-  ```
-- **Full validation pipeline**:
-  ```bash
-  bash -n scripts/*.sh && find scripts/ -name "*.sh" -exec shellcheck {} +
-  ```
+- **Syntax check**: Run `make test` or `bash -n scripts/<file>.sh`
+- **Full validation pipeline**: Run `make validate`
 
 ### 1.4 Docker Compose
 
-- **Start services**: `docker-compose up -d`
-- **Stop services**: `docker-compose down`
-- **View logs**: `docker-compose logs -f openwebui`
+- **Start services**: `make docker-up` or `docker-compose up -d`
+- **Stop services**: `make docker-down` or `docker-compose down`
+- **View logs**: `make docker-logs` or `docker-compose logs -f openwebui`
+
 
 ## 2. Code Style Guidelines
 
