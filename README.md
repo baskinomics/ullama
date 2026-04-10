@@ -28,22 +28,77 @@ Ullama serves as a personal infrastructure-as-code (IaC) repository to persist a
 - Minimum 16GB VRAM for larger models
 - 32GB+ system RAM
 
+# Ullama
+...
 ### Installation
 
 ```bash
 # 1. Install Docker
-./scripts/install-docker.sh
-# Log out and back in, then:
+# Note: If docker is not installed, use the manual install-docker.sh script first.
+# Once installed, log out and back in, then:
 
 # 2. Start Open WebUI
-docker-compose up -d
+make docker-up
 
 # 3. Build llama.cpp (if not already done)
-./scripts/update_llama_cpp.sh
+make build
 
 # 4. Start the router server
-./scripts/run-server.sh
+make server
 ```
+...
+### View Logs
+
+```bash
+# Router server logs
+tail -f scripts/logs/server.log
+
+# Open WebUI logs
+make docker-logs
+
+# Monitor GPU usage
+watch nvidia-smi
+```
+...
+### Restart Services
+
+```bash
+# Restart router server
+make stop
+make server
+
+# Restart Open WebUI
+make docker-down
+make docker-up
+```
+
+...
+### View Logs
+
+```bash
+# Router server logs
+tail -f scripts/logs/server.log
+
+# Open WebUI logs
+make docker-logs
+
+# Monitor GPU usage
+watch nvidia-smi
+```
+...
+### Restart Services
+
+```bash
+# Restart router server
+make stop
+make server
+
+# Restart Open WebUI
+make docker-down
+make docker-up
+```
+...
+
 
 ### Access
 
