@@ -15,6 +15,7 @@
 
 ## Research / Spikes
 - [ ] use smaller / MoE models for doc agent - refs docs/journal/2026-04-09-moe-model-research.md
+- [ ] test Jackrong model variants (Qwopus3.5-27B, Qwopus3.5-9B, Gemopus-4-E4B) - refs docs/journal/2026-04-09-model-research-jackrong-unsloth.md
 
 ## Process
 - [ ] change verbiage and some processes to just Ullama
