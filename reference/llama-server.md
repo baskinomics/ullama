@@ -1,235 +1,582 @@
-# `llama-server` Exhaustive Technical Reference Guide
+# `llama-server` Help Reference
 
-## Abstract
+Updated on: Thu Apr  9 06:16:43 PM MDT 2026
 
-This document serves as an exhaustive, graduate-level technical reference for `llama-server`, the high-performance HTTP model serving daemon provided by the `llama.cpp` ecosystem. It meticulously dissects the entirety of its command-line interface parameters. The analysis is highly pedantic, catering specifically to infrastructure engineers, HPC (High-Performance Computing) systems administrators, and machine learning researchers who require absolute, granular control over large language model (LLM) inference topologies, memory allocation strategies, and stochastic sampling mathematics. **Every single flag** present in the daemon's schema is cataloged and demystified herein.
+```text
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 24060 MiB):
+  Device 0: NVIDIA GeForce RTX 4090, compute capability 8.9, VMM: yes, VRAM: 24060 MiB
+================================================================================
+WARNING: Migrating cache to HuggingFace cache directory
+  Old cache: /home/zoo/.cache/llama.cpp/
+  New cache: /home/zoo/.cache/huggingface/hub
+This one-time migration moves models previously downloaded with -hf
+from the legacy llama.cpp cache to the standard HuggingFace cache.
+Models downloaded with --model-url are not affected.
+================================================================================
+collect_file: mradermacher_Tankie-DPE-12b-SFT-i1-GGUF_Tankie-DPE-12b-SFT.i1-Q6_K.gguf not found in old cache or HF cache
+migrate_old_cache_to_hf_cache: migration skipped: one or more files failed validation
+collect_file: unsloth_Qwen3-Coder-Next-GGUF_Qwen3-Coder-Next-MXFP4_MOE.gguf is not up to date (sha256 mismatch)
+migrate_old_cache_to_hf_cache: migration skipped: one or more files failed validation
+----- common params -----
 
----
+-h,    --help, --usage                  print usage and exit
+--version                               show version and build info
+--license                               show source code license and dependencies
+-cl,   --cache-list                     show list of models in cache
+--completion-bash                       print source-able bash completion script for llama.cpp
+-t,    --threads N                      number of CPU threads to use during generation (default: -1)
+                                        (env: LLAMA_ARG_THREADS)
+-tb,   --threads-batch N                number of threads to use during batch and prompt processing (default:
+                                        same as --threads)
+-C,    --cpu-mask M                     CPU affinity mask: arbitrarily long hex. Complements cpu-range
+                                        (default: "")
+-Cr,   --cpu-range lo-hi                range of CPUs for affinity. Complements --cpu-mask
+--cpu-strict <0|1>                      use strict CPU placement (default: 0)
+--prio N                                set process/thread priority : low(-1), normal(0), medium(1), high(2),
+                                        realtime(3) (default: 0)
+--poll <0...100>                        use polling level to wait for work (0 - no polling, default: 50)
+-Cb,   --cpu-mask-batch M               CPU affinity mask: arbitrarily long hex. Complements cpu-range-batch
+                                        (default: same as --cpu-mask)
+-Crb,  --cpu-range-batch lo-hi          ranges of CPUs for affinity. Complements --cpu-mask-batch
+--cpu-strict-batch <0|1>                use strict CPU placement (default: same as --cpu-strict)
+--prio-batch N                          set process/thread priority : 0-normal, 1-medium, 2-high, 3-realtime
+                                        (default: 0)
+--poll-batch <0|1>                      use polling to wait for work (default: same as --poll)
+-c,    --ctx-size N                     size of the prompt context (default: 0, 0 = loaded from model)
+                                        (env: LLAMA_ARG_CTX_SIZE)
+-n,    --predict, --n-predict N         number of tokens to predict (default: -1, -1 = infinity)
+                                        (env: LLAMA_ARG_N_PREDICT)
+-b,    --batch-size N                   logical maximum batch size (default: 2048)
+                                        (env: LLAMA_ARG_BATCH)
+-ub,   --ubatch-size N                  physical maximum batch size (default: 512)
+                                        (env: LLAMA_ARG_UBATCH)
+--keep N                                number of tokens to keep from the initial prompt (default: 0, -1 =
+                                        all)
+--swa-full                              use full-size SWA cache (default: false)
+                                        [(more
+                                        info)](https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)
+                                        (env: LLAMA_ARG_SWA_FULL)
+-fa,   --flash-attn [on|off|auto]       set Flash Attention use ('on', 'off', or 'auto', default: 'auto')
+                                        (env: LLAMA_ARG_FLASH_ATTN)
+--perf, --no-perf                       whether to enable internal libllama performance timings (default:
+                                        false)
+                                        (env: LLAMA_ARG_PERF)
+-e,    --escape, --no-escape            whether to process escapes sequences (\n, \r, \t, \', \", \\)
+                                        (default: true)
+--rope-scaling {none,linear,yarn}       RoPE frequency scaling method, defaults to linear unless specified by
+                                        the model
+                                        (env: LLAMA_ARG_ROPE_SCALING_TYPE)
+--rope-scale N                          RoPE context scaling factor, expands context by a factor of N
+                                        (env: LLAMA_ARG_ROPE_SCALE)
+--rope-freq-base N                      RoPE base frequency, used by NTK-aware scaling (default: loaded from
+                                        model)
+                                        (env: LLAMA_ARG_ROPE_FREQ_BASE)
+--rope-freq-scale N                     RoPE frequency scaling factor, expands context by a factor of 1/N
+                                        (env: LLAMA_ARG_ROPE_FREQ_SCALE)
+--yarn-orig-ctx N                       YaRN: original context size of model (default: 0 = model training
+                                        context size)
+                                        (env: LLAMA_ARG_YARN_ORIG_CTX)
+--yarn-ext-factor N                     YaRN: extrapolation mix factor (default: -1.00, 0.0 = full
+                                        interpolation)
+                                        (env: LLAMA_ARG_YARN_EXT_FACTOR)
+--yarn-attn-factor N                    YaRN: scale sqrt(t) or attention magnitude (default: -1.00)
+                                        (env: LLAMA_ARG_YARN_ATTN_FACTOR)
+--yarn-beta-slow N                      YaRN: high correction dim or alpha (default: -1.00)
+                                        (env: LLAMA_ARG_YARN_BETA_SLOW)
+--yarn-beta-fast N                      YaRN: low correction dim or beta (default: -1.00)
+                                        (env: LLAMA_ARG_YARN_BETA_FAST)
+-kvo,  --kv-offload, -nkvo, --no-kv-offload
+                                        whether to enable KV cache offloading (default: enabled)
+                                        (env: LLAMA_ARG_KV_OFFLOAD)
+--repack, -nr, --no-repack              whether to enable weight repacking (default: enabled)
+                                        (env: LLAMA_ARG_REPACK)
+--no-host                               bypass host buffer allowing extra buffers to be used
+                                        (env: LLAMA_ARG_NO_HOST)
+-ctk,  --cache-type-k TYPE              KV cache data type for K
+                                        allowed values: f32, f16, bf16, q8_0, q4_0, q4_1, iq4_nl, q5_0, q5_1
+                                        (default: f16)
+                                        (env: LLAMA_ARG_CACHE_TYPE_K)
+-ctv,  --cache-type-v TYPE              KV cache data type for V
+                                        allowed values: f32, f16, bf16, q8_0, q4_0, q4_1, iq4_nl, q5_0, q5_1
+                                        (default: f16)
+                                        (env: LLAMA_ARG_CACHE_TYPE_V)
+-dt,   --defrag-thold N                 KV cache defragmentation threshold (DEPRECATED)
+                                        (env: LLAMA_ARG_DEFRAG_THOLD)
+--mlock                                 force system to keep model in RAM rather than swapping or compressing
+                                        (env: LLAMA_ARG_MLOCK)
+--mmap, --no-mmap                       whether to memory-map model. (if mmap disabled, slower load but may
+                                        reduce pageouts if not using mlock) (default: enabled)
+                                        (env: LLAMA_ARG_MMAP)
+-dio,  --direct-io, -ndio, --no-direct-io
+                                        use DirectIO if available. (default: disabled)
+                                        (env: LLAMA_ARG_DIO)
+--numa TYPE                             attempt optimizations that help on some NUMA systems
+                                        - distribute: spread execution evenly over all nodes
+                                        - isolate: only spawn threads on CPUs on the node that execution
+                                        started on
+                                        - numactl: use the CPU map provided by numactl
+                                        if run without this previously, it is recommended to drop the system
+                                        page cache before using this
+                                        see https://github.com/ggml-org/llama.cpp/issues/1437
+                                        (env: LLAMA_ARG_NUMA)
+-dev,  --device <dev1,dev2,..>          comma-separated list of devices to use for offloading (none = don't
+                                        offload)
+                                        use --list-devices to see a list of available devices
+                                        (env: LLAMA_ARG_DEVICE)
+--list-devices                          print list of available devices and exit
+-ot,   --override-tensor <tensor name pattern>=<buffer type>,...
+                                        override tensor buffer type
+                                        (env: LLAMA_ARG_OVERRIDE_TENSOR)
+-cmoe, --cpu-moe                        keep all Mixture of Experts (MoE) weights in the CPU
+                                        (env: LLAMA_ARG_CPU_MOE)
+-ncmoe, --n-cpu-moe N                   keep the Mixture of Experts (MoE) weights of the first N layers in the
+                                        CPU
+                                        (env: LLAMA_ARG_N_CPU_MOE)
+-ngl,  --gpu-layers, --n-gpu-layers N   max. number of layers to store in VRAM, either an exact number,
+                                        'auto', or 'all' (default: auto)
+                                        (env: LLAMA_ARG_N_GPU_LAYERS)
+-sm,   --split-mode {none,layer,row,tensor}
+                                        how to split the model across multiple GPUs, one of:
+                                        - none: use one GPU only
+                                        - layer (default): split layers and KV across GPUs (pipelined)
+                                        - row: split weight across GPUs by rows (parallelized)
+                                        - tensor: split weights and KV across GPUs (parallelized)
+                                        (env: LLAMA_ARG_SPLIT_MODE)
+-ts,   --tensor-split N0,N1,N2,...      fraction of the model to offload to each GPU, comma-separated list of
+                                        proportions, e.g. 3,1
+                                        (env: LLAMA_ARG_TENSOR_SPLIT)
+-mg,   --main-gpu INDEX                 the GPU to use for the model (with split-mode = none), or for
+                                        intermediate results and KV (with split-mode = row) (default: 0)
+                                        (env: LLAMA_ARG_MAIN_GPU)
+-fit,  --fit [on|off]                   whether to adjust unset arguments to fit in device memory ('on' or
+                                        'off', default: 'on')
+                                        (env: LLAMA_ARG_FIT)
+-fitt, --fit-target MiB0,MiB1,MiB2,...
+                                        target margin per device for --fit, comma-separated list of values,
+                                        single value is broadcast across all devices, default: 1024
+                                        (env: LLAMA_ARG_FIT_TARGET)
+-fitc, --fit-ctx N                      minimum ctx size that can be set by --fit option, default: 4096
+                                        (env: LLAMA_ARG_FIT_CTX)
+--check-tensors                         check model tensor data for invalid values (default: false)
+--override-kv KEY=TYPE:VALUE,...        advanced option to override model metadata by key. to specify multiple
+                                        overrides, either use comma-separated values.
+                                        types: int, float, bool, str. example: --override-kv
+                                        tokenizer.ggml.add_bos_token=bool:false,tokenizer.ggml.add_eos_token=bool:false
+--op-offload, --no-op-offload           whether to offload host tensor operations to device (default: true)
+--lora FNAME                            path to LoRA adapter (use comma-separated values to load multiple
+                                        adapters)
+--lora-scaled FNAME:SCALE,...           path to LoRA adapter with user defined scaling (format:
+                                        FNAME:SCALE,...)
+                                        note: use comma-separated values
+--control-vector FNAME                  add a control vector
+                                        note: use comma-separated values to add multiple control vectors
+--control-vector-scaled FNAME:SCALE,...
+                                        add a control vector with user defined scaling SCALE
+                                        note: use comma-separated values (format: FNAME:SCALE,...)
+--control-vector-layer-range START END
+                                        layer range to apply the control vector(s) to, start and end inclusive
+-m,    --model FNAME                    model path to load
+                                        (env: LLAMA_ARG_MODEL)
+-mu,   --model-url MODEL_URL            model download url (default: unused)
+                                        (env: LLAMA_ARG_MODEL_URL)
+-dr,   --docker-repo [<repo>/]<model>[:quant]
+                                        Docker Hub model repository. repo is optional, default to ai/. quant
+                                        is optional, default to :latest.
+                                        example: gemma3
+                                        (default: unused)
+                                        (env: LLAMA_ARG_DOCKER_REPO)
+-hf,   -hfr, --hf-repo <user>/<model>[:quant]
+                                        Hugging Face model repository; quant is optional, case-insensitive,
+                                        default to Q4_K_M, or falls back to the first file in the repo if
+                                        Q4_K_M doesn't exist.
+                                        mmproj is also downloaded automatically if available. to disable, add
+                                        --no-mmproj
+                                        example: ggml-org/GLM-4.7-Flash-GGUF:Q4_K_M
+                                        (default: unused)
+                                        (env: LLAMA_ARG_HF_REPO)
+-hfd,  -hfrd, --hf-repo-draft <user>/<model>[:quant]
+                                        Same as --hf-repo, but for the draft model (default: unused)
+                                        (env: LLAMA_ARG_HFD_REPO)
+-hff,  --hf-file FILE                   Hugging Face model file. If specified, it will override the quant in
+                                        --hf-repo (default: unused)
+                                        (env: LLAMA_ARG_HF_FILE)
+-hfv,  -hfrv, --hf-repo-v <user>/<model>[:quant]
+                                        Hugging Face model repository for the vocoder model (default: unused)
+                                        (env: LLAMA_ARG_HF_REPO_V)
+-hffv, --hf-file-v FILE                 Hugging Face model file for the vocoder model (default: unused)
+                                        (env: LLAMA_ARG_HF_FILE_V)
+-hft,  --hf-token TOKEN                 Hugging Face access token (default: value from HF_TOKEN environment
+                                        variable)
+                                        (env: HF_TOKEN)
+--log-disable                           Log disable
+--log-file FNAME                        Log to file
+                                        (env: LLAMA_LOG_FILE)
+--log-colors [on|off|auto]              Set colored logging ('on', 'off', or 'auto', default: 'auto')
+                                        'auto' enables colors when output is to a terminal
+                                        (env: LLAMA_LOG_COLORS)
+-v,    --verbose, --log-verbose         Set verbosity level to infinity (i.e. log all messages, useful for
+                                        debugging)
+--offline                               Offline mode: forces use of cache, prevents network access
+                                        (env: LLAMA_OFFLINE)
+-lv,   --verbosity, --log-verbosity N   Set the verbosity threshold. Messages with a higher verbosity will be
+                                        ignored. Values:
+                                         - 0: generic output
+                                         - 1: error
+                                         - 2: warning
+                                         - 3: info
+                                         - 4: debug
+                                        (default: 3)
+                                        
+                                        (env: LLAMA_LOG_VERBOSITY)
+--log-prefix                            Enable prefix in log messages
+                                        (env: LLAMA_LOG_PREFIX)
+--log-timestamps                        Enable timestamps in log messages
+                                        (env: LLAMA_LOG_TIMESTAMPS)
+-ctkd, --cache-type-k-draft TYPE        KV cache data type for K for the draft model
+                                        allowed values: f32, f16, bf16, q8_0, q4_0, q4_1, iq4_nl, q5_0, q5_1
+                                        (default: f16)
+                                        (env: LLAMA_ARG_CACHE_TYPE_K_DRAFT)
+-ctvd, --cache-type-v-draft TYPE        KV cache data type for V for the draft model
+                                        allowed values: f32, f16, bf16, q8_0, q4_0, q4_1, iq4_nl, q5_0, q5_1
+                                        (default: f16)
+                                        (env: LLAMA_ARG_CACHE_TYPE_V_DRAFT)
 
-## 1. Systemic Execution & Administrative Directives
 
-These parameters dictate the fundamental execution states, telemetry output, and diagnostic verbosity of the server daemon.
+----- sampling params -----
 
-*   `-h, --help, --usage`: Instantiates the immediate termination of the process, emitting the standard usage schema to stdout.
-*   `--version`: Outputs the compiled version heuristics and specific build architecture parameters before terminating.
-*   `--license`: Exposes the source code licensing agreements and immediate dependency acknowledgments.
-*   `-cl, --cache-list`: Enumerates the inventory of model artifacts currently resident within the systemic cache hierarchy.
-*   `--completion-bash`: Synthesizes and emits a source-able Bash completion script, facilitating CLI tab-completion dynamics for `llama.cpp` implementations.
-*   `--verbose-prompt`: Forces the system to dump a verbose, token-by-token evaluation of the prompt before executing auto-regressive generation (default: false).
-*   `--log-disable`: Completely suppresses the internal logging engine, effectively silencing `stderr` and `stdout` telemetry.
-*   `--log-file FNAME`: Redirects the standard telemetry stream to a specified persistent file artifact `FNAME`.
-*   `--log-colors [on|off|auto]`: Mandates the employment of ANSI escape sequence color coding in the log stream. `auto` applies heuristics to determine if the output target is a TTY.
-*   `-v, --verbose, --log-verbose`: Maximizes the log verbosity to absolute infinity, instrumental for deep topological debugging.
-*   `-lv, --verbosity, --log-verbosity N`: Establishes a strict threshold for the telemetry stream: `0` (generic), `1` (error), `2` (warning), `3` (info), `4` (debug) (default: 3).
-*   `--log-prefix`: Prefixes all generated log messages with contextual categorization strings.
-*   `--log-timestamps`: Integrates high-precision chronometric timestamps into every log message payload.
-*   `--perf, --no-perf`: Dictates the collection and emission of internal `libllama` micro-benchmarking performance timings (default: false).
+--samplers SAMPLERS                     samplers that will be used for generation in the order, separated by
+                                        ';'
+                                        (default:
+                                        penalties;dry;top_n_sigma;top_k;typ_p;top_p;min_p;xtc;temperature)
+-s,    --seed SEED                      RNG seed (default: -1, use random seed for -1)
+--sampler-seq, --sampling-seq SEQUENCE
+                                        simplified sequence for samplers that will be used (default:
+                                        edskypmxt)
+--ignore-eos                            ignore end of stream token and continue generating (implies
+                                        --logit-bias EOS-inf)
+--temp, --temperature N                 temperature (default: 0.80)
+--top-k N                               top-k sampling (default: 40, 0 = disabled)
+                                        (env: LLAMA_ARG_TOP_K)
+--top-p N                               top-p sampling (default: 0.95, 1.0 = disabled)
+--min-p N                               min-p sampling (default: 0.05, 0.0 = disabled)
+--top-nsigma, --top-n-sigma N           top-n-sigma sampling (default: -1.00, -1.0 = disabled)
+--xtc-probability N                     xtc probability (default: 0.00, 0.0 = disabled)
+--xtc-threshold N                       xtc threshold (default: 0.10, 1.0 = disabled)
+--typical, --typical-p N                locally typical sampling, parameter p (default: 1.00, 1.0 = disabled)
+--repeat-last-n N                       last n tokens to consider for penalize (default: 64, 0 = disabled, -1
+                                        = ctx_size)
+--repeat-penalty N                      penalize repeat sequence of tokens (default: 1.00, 1.0 = disabled)
+--presence-penalty N                    repeat alpha presence penalty (default: 0.00, 0.0 = disabled)
+--frequency-penalty N                   repeat alpha frequency penalty (default: 0.00, 0.0 = disabled)
+--dry-multiplier N                      set DRY sampling multiplier (default: 0.00, 0.0 = disabled)
+--dry-base N                            set DRY sampling base value (default: 1.75)
+--dry-allowed-length N                  set allowed length for DRY sampling (default: 2)
+--dry-penalty-last-n N                  set DRY penalty for the last n tokens (default: -1, 0 = disable, -1 =
+                                        context size)
+--dry-sequence-breaker STRING           add sequence breaker for DRY sampling, clearing out default breakers
+                                        ('\n', ':', '"', '*') in the process; use "none" to not use any
+                                        sequence breakers
+--adaptive-target N                     adaptive-p: select tokens near this probability (valid range 0.0 to
+                                        1.0; negative = disabled) (default: -1.00)
+                                        [(more info)](https://github.com/ggml-org/llama.cpp/pull/17927)
+--adaptive-decay N                      adaptive-p: decay rate for target adaptation over time. lower values
+                                        are more reactive, higher values are more stable.
+                                        (valid range 0.0 to 0.99) (default: 0.90)
+--dynatemp-range N                      dynamic temperature range (default: 0.00, 0.0 = disabled)
+--dynatemp-exp N                        dynamic temperature exponent (default: 1.00)
+--mirostat N                            use Mirostat sampling.
+                                        Top K, Nucleus and Locally Typical samplers are ignored if used.
+                                        (default: 0, 0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)
+--mirostat-lr N                         Mirostat learning rate, parameter eta (default: 0.10)
+--mirostat-ent N                        Mirostat target entropy, parameter tau (default: 5.00)
+-l,    --logit-bias TOKEN_ID(+/-)BIAS   modifies the likelihood of token appearing in the completion,
+                                        i.e. `--logit-bias 15043+1` to increase likelihood of token ' Hello',
+                                        or `--logit-bias 15043-1` to decrease likelihood of token ' Hello'
+--grammar GRAMMAR                       BNF-like grammar to constrain generations (see samples in grammars/
+                                        dir)
+--grammar-file FNAME                    file to read grammar from
+-j,    --json-schema SCHEMA             JSON schema to constrain generations (https://json-schema.org/), e.g.
+                                        `{}` for any JSON object
+                                        For schemas w/ external $refs, use --grammar +
+                                        example/json_schema_to_grammar.py instead
+-jf,   --json-schema-file FILE          File containing a JSON schema to constrain generations
+                                        (https://json-schema.org/), e.g. `{}` for any JSON object
+                                        For schemas w/ external $refs, use --grammar +
+                                        example/json_schema_to_grammar.py instead
+-bs,   --backend-sampling               enable backend sampling (experimental) (default: disabled)
+                                        (env: LLAMA_ARG_BACKEND_SAMPLING)
 
-## 2. Hardware Orchestration and CPU Affinity Management
 
-These flags strictly govern POSIX thread (pthread) spawning, busy-wait polling strategies, and core-level affinity masks, crucial for mitigating context-switching latency in multi-core and NUMA architectures.
+----- example-specific params -----
 
-*   `-t, --threads N`: Defines the absolute integer count of CPU threads mobilized during the auto-regressive generation phase. `-1` employs automatic hardware query deduction.
-*   `-tb, --threads-batch N`: Allocates the thread count explicitly dedicated to the computationally dense prefill (prompt processing) batch operations.
-*   `-C, --cpu-mask M`: Imposes an arbitrarily long hexadecimal CPU affinity mask, strictly pinning generation threads to precise logical cores.
-*   `-Cr, --cpu-range lo-hi`: A complementary syntactical sugar to `--cpu-mask`, allowing the definition of CPU affinity via integer ranges.
-*   `--cpu-strict <0|1>`: Rigidly enforces the aforementioned CPU placement directives, circumventing OS-level scheduler migrations (default: 0).
-*   `--prio N`: Modulates the underlying process/thread scheduling priority. Scale ranges from `-1` (low) to `3` (realtime).
-*   `--poll <0...100>`: Determines the aggressiveness of the busy-wait polling loop when anticipating thread work. High polling (`100`) minimizes dispatch latency at the cost of maximum power consumption.
-*   `-Cb, --cpu-mask-batch M`: The affinity mask equivalent dedicated purely to the batch processing thread pool.
-*   `-Crb, --cpu-range-batch lo-hi`: The CPU range descriptor for the batch processing thread pool.
-*   `--cpu-strict-batch <0|1>`: The strict enforcement toggle for batch processing thread placement.
-*   `--prio-batch N`: Scheduling priority mapping specifically for batch threads.
-*   `--poll-batch <0|1>`: The aggressive polling toggle dedicated to the batch processing lifecycle.
-*   `--numa TYPE`: Executes complex Non-Uniform Memory Access (NUMA) mitigations. `distribute` spreads execution across memory nodes, `isolate` traps execution within the instantiation node, and `numactl` blindly defers to external CPU maps.
-*   `-td, --threads-draft N`: The integer count of threads allocated for evaluating the smaller speculative decoding draft model.
-*   `-tbd, --threads-batch-draft N`: The thread count allocated for the batch processing phase of the speculative draft model.
-*   `--threads-http N`: Defines the concurrency pool size for parsing and responding to asynchronous HTTP requests independent of the inference thread pools.
-
-## 3. Context, Batching, and KV Cache Topologies
-
-These configurations mathematically bound the latent context constraints and the memory architecture of the Key-Value cache.
-
-*   `-c, --ctx-size N`: The absolute scalar dimension of the maximum sequence context. `0` inherits the pre-defined architectural limit encoded within the GGUF model metadata.
-*   `-n, --predict, --n-predict N`: Restricts the maximum integer count of tokens the model is permitted to auto-regressively generate per request. `-1` denotes infinity (until `EOS`).
-*   `-b, --batch-size N`: The logical maximum volume of tokens the server can aggregate across independent requests before dispatching a parallelized compute execution.
-*   `-ub, --ubatch-size N`: The physical micro-batch threshold. This defines the atomized matrix size dispatched natively to the backend BLAS implementation.
-*   `--keep N`: Preserves a specified block of `N` initial prompt tokens from being purged during forced context-window truncation/shifting.
-*   `--swa-full`: Forces the allocation of a comprehensive Sliding Window Attention (SWA) cache, bypassing memory-conserving sparse allocations.
-*   `-fa, --flash-attn [on|off|auto]`: Mandates the employment of Dao-style Flash Attention kernels, yielding mathematical equivalence but drastically reducing intermediate memory staging (VRAM I/O).
-*   `-kvo, --kv-offload, -nkvo, --no-kv-offload`: A critical toggle dictating whether the massive, stateful Key-Value cache is pushed into the high-bandwidth VRAM of parallel accelerators or relegated to system RAM.
-*   `-ctk, --cache-type-k TYPE`: The numerical precision assigned to the Key cache. Values span `f32`, `f16`, `bf16`, and various quantizations (`q8_0`, `q4_0`, `iq4_nl`, etc.).
-*   `-ctv, --cache-type-v TYPE`: The respective numerical precision assigned to the Value cache.
-*   `-ctkd, --cache-type-k-draft TYPE`: The specific Key cache precision allocated to the speculative draft model.
-*   `-ctvd, --cache-type-v-draft TYPE`: The specific Value cache precision allocated to the speculative draft model.
-*   `-dt, --defrag-thold N`: **[DEPRECATED]** Historically used to govern the fragmentation threshold before triggering a KV cache defragmentation sweep.
-*   `--cache-prompt, --no-cache-prompt`: Enables stateful prompt caching, preserving the computed KV matrices of common prompt prefixes across distinct HTTP requests.
-*   `--cache-reuse N`: Specifies the minimal contiguous chunk size (in tokens) necessary to merit a KV shift operation to reuse a cached prompt segment.
-*   `--context-shift, --no-context-shift`: Facilitates infinite generative loops by purging older token context blocks and rolling the context window forward seamlessly rather than halting generation upon exhaustion.
-*   `-cd, --ctx-size-draft N`: Specifies a distinct prompt context dimension explicitly for the speculative draft model.
-
-## 4. VRAM Allocation and Multi-GPU Parallelism
-
-This cluster strictly governs how tensors are spatially distributed across high-performance compute accelerators (GPUs).
-
-*   `-ngl, --gpu-layers, --n-gpu-layers N`: Dictates the precise scalar count of transformer blocks to migrate from system RAM into accelerator VRAM. Supports `auto` for VRAM capacity estimation and `all` for complete migration.
-*   `-sm, --split-mode {none,layer,row}`: Selects the spatial distribution paradigm for multi-GPU arrays. `layer` implements sequential tensor parallelism (sharding distinct layers to distinct GPUs). `row` shards individual weight matrices mathematically across GPUs.
-*   `-ts, --tensor-split N0,N1,N2,...`: A comma-delimited proportionality vector explicitly dictating the asymmetric distribution of VRAM allocation across enumerated accelerator devices (e.g., `3,1`).
-*   `-mg, --main-gpu INDEX`: Designates the primary orchestrator GPU responsible for intermediate aggregations, residual states, and KV storage when `split-mode` is `row` or `none`.
-*   `-dev, --device <dev1,dev2,..>`: A precise string constraint binding inference execution to explicitly declared device indices (e.g., bypassing a specific GPU).
-*   `--list-devices`: Scans the system buses and emits a structured list of compatible accelerator devices before terminating.
-*   `-fit, --fit [on|off]`: An automatic heuristic engine that aggressively down-scales parameters (like context size) to forcibly fit the model within hard VRAM constraints to prevent Out-Of-Memory (OOM) aborts.
-*   `-fitt, --fit-target MiB0,MiB1,MiB2,...`: Defines the safety margin padding (in Megabytes) left unallocated by the `--fit` algorithm for each targeted GPU.
-*   `-fitc, --fit-ctx N`: Establishes the absolute minimal context window threshold the `--fit` mechanism is allowed to scale down to before failing gracefully.
-*   `-ngld, --gpu-layers-draft, --n-gpu-layers-draft N`: Determines the number of VRAM-resident transformer layers specifically for the speculative draft model.
-*   `-devd, --device-draft <dev1,dev2,..>`: Offloads the draft model to a completely distinct physical accelerator array, physically isolating draft compute from main compute.
-
-## 5. Weights, Models, and Latent Space Manipulation
-
-Parameters handling the ingestion, patching, overriding, and mapping of internal parameter weights from persistent storage or remote repositories.
-
-*   `-m, --model FNAME`: The primary filesystem path traversing to the quantized GGUF model artifact.
-*   `-mu, --model-url MODEL_URL`: Ingests model weights via an HTTP/HTTPS stream buffer directly into execution.
-*   `-dr, --docker-repo [<repo>/]<model>[:quant]`: Fetches model artifacts utilizing the Docker Hub repository registry protocols.
-*   `-hf, -hfr, --hf-repo <user>/<model>[:quant]`: Dynamically resolves and pulls model weights utilizing the Hugging Face hub API topology.
-*   `-hfd, -hfrd, --hf-repo-draft <user>/<model>[:quant]`: Dynamically pulls the speculative decoding draft model from the Hugging Face hub.
-*   `-hff, --hf-file FILE`: Bypasses default quantization selections and forces the retrieval of a specific file nomenclature from the specified Hugging Face repository.
-*   `-hft, --hf-token TOKEN`: The Bearer authentication token necessary for traversing gated or private Hugging Face repositories.
-*   `-md, --model-draft FNAME`: The local filesystem path pointing to the secondary, smaller GGUF file used for speculative hypotheses.
-*   `--offline`: Severely restricts network egress, forcing the system to rely strictly on locally cached artifacts and preventing hub telemetry.
-*   `-ot, --override-tensor <tensor name pattern>=<buffer type>,...`: A highly volatile flag allowing dynamic runtime patching of specific tensor arrays into defined buffer types (e.g., forcing a specific weight array into FP32).
-*   `-otd, --override-tensor-draft <tensor...>`: Applies the tensor override schema directly to the speculative draft model.
-*   `--override-kv KEY=TYPE:VALUE,...`: Mutates the fundamental GGUF Key-Value metadata header upon instantiation. Examples include injecting `tokenizer.ggml.add_bos_token=bool:false`.
-*   `--lora FNAME`: Dynamically injects Low-Rank Adaptation (LoRA) matrices into the resident weights at runtime, mathematically patching the linear projections.
-*   `--lora-scaled FNAME:SCALE,...`: Injects LoRA matrices while applying an explicit scalar multiplier to the adapter weights before summation.
-*   `--lora-init-without-apply`: Pre-loads the LoRA adapters into memory but deliberately delays their mathematical application until explicitly commanded via a POST request to `/lora-adapters`.
-*   `--control-vector FNAME`: Loads and applies a latent activation control vector to steer model alignment dynamically.
-*   `--control-vector-scaled FNAME:SCALE,...`: Applies the control vector manipulated by a precise intensity scalar.
-*   `--control-vector-layer-range START END`: Restricts the mathematical application of the control vector to an explicitly bounded range of intermediate transformer layers.
-*   `-cmoe, --cpu-moe`: Intercepts the routing of Mixture of Experts (MoE) gating and forces all constituent expert weights to remain pinned in system RAM, preventing VRAM overflow in massive multi-expert models.
-*   `-ncmoe, --n-cpu-moe N`: Specifically forces only the first `N` layers of MoE weights to remain in system RAM.
-*   `-cmoed, --cpu-moe-draft`, `-ncmoed, --n-cpu-moe-draft N`: Applies the CPU-bound MoE routing directives directly to the speculative draft model.
-*   `--repack, -nr, --no-repack`: Toggles the internal weight repacking routines optimized for target backend memory layouts (default: enabled).
-*   `--mlock`: Issues a strict POSIX `mlock()` syscall, forcing the entire loaded model artifact to remain physically pinned in RAM, totally circumventing OS swap partitions.
-*   `--mmap, --no-mmap`: Leverages the zero-copy `mmap()` syscall to map the file directly into virtual memory. Disabling this enforces a slower, manual memory load which mitigates page faults on memory-starved deployments.
-*   `-dio, --direct-io, -ndio, --no-direct-io`: Circumvents the operating system's page cache layer entirely via `O_DIRECT`, streaming data linearly from NVMe directly to RAM/VRAM buffers.
-*   `--no-host`: Bypasses standard host buffer allocation, streamlining operations for highly customized external buffer managers.
-*   `--op-offload, --no-op-offload`: Dictates whether host-bound tensor operations (non-matrix-multiplication ops) should be iteratively offloaded to compute devices.
-*   `--check-tensors`: Enforces rigorous computational validity checks against model tensors during initialization, explicitly searching for `NaN` or `Inf` anomalies.
-*   `--embd-gemma-default`, `--fim-qwen-1.5b-default`, `--fim-qwen-3b-default`, `--fim-qwen-7b-default`, `--fim-qwen-7b-spec`, `--fim-qwen-14b-spec`, `--fim-qwen-30b-default`, `--gpt-oss-20b-default`, `--gpt-oss-120b-default`, `--vision-gemma-4b-default`, `--vision-gemma-12b-default`: A suite of absolute macro flags that automatically orchestrate the download, configuration, and structural instantiation of deeply specific ecosystem models.
-
-## 6. RoPE Scaling and Positional Embedding Dynamics
-
-Parameters manipulating the mathematical extrapolation or interpolation of sequence positions when context limits exceed training topologies.
-
-*   `--rope-scaling {none,linear,yarn}`: Selects the fundamental algorithmic approach to contextual expansion: standard linear interpolation or advanced YaRN interpolation.
-*   `--rope-scale N`: A simplistic linear multiplicative scalar expanding the context threshold boundary.
-*   `--rope-freq-base N`: Overrides the base sinusoidal frequency parameter used within Neural Tangent Kernel (NTK) aware scaling architectures.
-*   `--rope-freq-scale N`: Operates as an inverse scalar (factor of `1/N`) mapping dimensional embeddings into higher frequencies.
-*   `--yarn-orig-ctx N`: Defines the original, pre-trained context domain necessary for the YaRN algorithm to identify interpolation boundaries.
-*   `--yarn-ext-factor N`: A highly specific extrapolation mix multiplier; `0.0` mandates absolute interpolation, while higher numbers map boundary values to extrapolated curves.
-*   `--yarn-attn-factor N`: Scales the attention magnitude or adjustments made against $\sqrt{d_k}$ parameters to counter entropy dispersion.
-*   `--yarn-beta-slow N`, `--yarn-beta-fast N`: Dimensional correction coefficients for high and low YaRN dimensions, strictly managing interpolation banding.
-
-## 7. Probabilistic Sampling and Constraint Algorithms
-
-These directives control the non-deterministic statistical distribution and mathematical truncation of token logit arrays prior to token selection.
-
-*   `--samplers SAMPLERS`: An explicit, semicolon-delimited execution pipeline dictating the sequential order in which sampling algorithms manipulate the logit distribution (e.g., `penalties;top_k;temperature`).
-*   `-s, --seed SEED`: Injects a deterministic integer into the Random Number Generator (RNG) engine. `-1` relies on atmospheric system entropy.
-*   `--sampler-seq, --sampling-seq SEQUENCE`: Provides a simplified, single-character string sequence mapping to define the sampling pipeline (e.g., `edskypmxt`).
-*   `--ignore-eos`: Statistically nullifies the End-Of-Sequence (EOS) token by asserting infinite negative logit bias against it, forcing unbounded generation.
-*   `--temp, --temperature N`: Modulates the Boltzmann temperature ($T$). As $T \rightarrow 0$, distribution approaches deterministic argmax.
-*   `--dynatemp-range N`, `--dynatemp-exp N`: Introduces dynamic temperature fluctuation mapped algorithmically to the intrinsic entropy of the momentary logit distribution state.
-*   `--top-k N`: Truncates the probability mass entirely, leaving only the $k$ highest-probability tokens.
-*   `--top-p N`: Implements Nucleus Sampling by severing the lowest-probability tokens iteratively until the cumulative probability mass equals $P$.
-*   `--min-p N`: Truncates any token whose absolute probability evaluates to less than $P_{max} \times N$ (where $P_{max}$ is the apex token's probability).
-*   `--top-nsigma, --top-n-sigma N`: Discards tokens whose probability falls beyond $N$ standard deviations from the distribution mean.
-*   `--xtc-probability N`, `--xtc-threshold N`: XTC (eXclude Top Choice) Sampling modifiers; probabilistically filters or penalizes tokens above a specific threshold to enforce variance.
-*   `--typical, --typical-p N`: Enforces Locally Typical Sampling by favoring tokens whose information content closely matches the expected entropy of the sequence.
-*   `--repeat-last-n N`: The look-back sequence length bounded to analyze context for upcoming penalizations.
-*   `--repeat-penalty N`: A multiplicative division algorithm applied to the logits of tokens that have previously appeared in the defined look-back window.
-*   `--presence-penalty N`: Applies a rigid, static additive deduction against the logits of previously materialized tokens.
-*   `--frequency-penalty N`: Applies an additive logit deduction that scales linearly based on the exact frequency count of a token's prior occurrences.
-*   `--dry-multiplier N`, `--dry-base N`, `--dry-allowed-length N`, `--dry-penalty-last-n N`: Implements DRY (Don't Repeat Yourself) sampling logic, calculating complex back-off penalties aggressively targeting sequence loops explicitly defined by a given length boundary.
-*   `--dry-sequence-breaker STRING`: Provides semantic string delimiters (like `\n` or `:`) that reset the DRY penalty accumulators.
-*   `--adaptive-target N`, `--adaptive-decay N`: Drives Adaptive Nucleus Sampling by programmatically shifting the target sequence probability over time based on an exponential decay curve.
-*   `--mirostat N`, `--mirostat-lr N`, `--mirostat-ent N`: Engages the Mirostat (Version 1 or 2) control theory algorithm. Mirostat continuously monitors distribution cross-entropy, dynamically modulating probability to adhere to a target entropy (`tau`) via a learning rate (`eta`), rendering traditional Top-K/P truncations obsolete.
-*   `-l, --logit-bias TOKEN_ID(+/-)BIAS`: Manually forces a mathematical integer addition or subtraction against the raw logit of a explicitly identified vocabulary `TOKEN_ID`.
-*   `--grammar GRAMMAR`, `--grammar-file FNAME`: Injects a rigid Backus-Naur Form (BNF) grammar parser directly into the logit selection pipeline, guaranteeing output conformity to strict syntax structures.
-*   `-j, --json-schema SCHEMA`, `-jf, --json-schema-file FILE`: Forces output constraints via a generalized JSON Schema structural definition, implemented internally as dynamic BNF.
-*   `-bs, --backend-sampling`: Re-routes probability sampling algorithms natively into the compute backend architecture (GPU) rather than executing on the host CPU.
-
-## 8. Continuous Batching & Server Slot Administration
-
-High-throughput server orchestration paradigms managing HTTP request queues and isolated memory states.
-
-*   `-np, --parallel N`: Declares the absolute upper bound of concurrent server "slots". Each slot isolates an independent contextual generation trajectory.
-*   `-cb, --cont-batching, -nocb, --no-cont-batching`: Activates continuous (dynamic) batching iteration. This continuously ejects completed queries from the active batch and injects new queued queries simultaneously, avoiding static batch blocking delays.
-*   `-kvu, --kv-unified, -no-kvu, --no-kv-unified`: Merges all independent slot KV buffers into a single contiguous unified buffer architecture to drastically mitigate memory fragmentation.
-*   `-sps, --slot-prompt-similarity SIMILARITY`: Implements a mathematical vector distance threshold (from `0.0` to `1.0`). If a new prompt prefix overlaps sufficiently with an existing slot's cached KV prefix, the server bypasses prefilling and immediately hijacks the existing slot context.
-*   `-ctxcp, --ctx-checkpoints, --swa-checkpoints N`: Sets the absolute maximum density of internal context state checkpoints to generate and preserve within the execution slot logic.
-*   `-cpent, --checkpoint-every-n-tokens N`: Dictates the stride length (in tokens) between generating subsequent context checkpoints during the prefill processing pipeline.
-*   `-cram, --cache-ram N`: A hard byte-constraint (in MiB) capping the systemic expansion of the overall cache infrastructure.
-*   `--slot-save-path PATH`: Specifies the absolute filesystem path target for persisting serialized binary dumps of the active KV cache slot states.
-*   `-lcs, --lookup-cache-static FNAME`: Injects a static, immutable lookup cache mapping array.
-*   `-lcd, --lookup-cache-dynamic FNAME`: Points to a dynamic lookup mapping dictionary actively mutated during auto-regressive generation.
-
-## 9. Speculative Decoding Frameworks
-
-Orchestrating multi-model latency mitigations where lightweight models hypothesize sequences that larger models verify iteratively in massive parallel blocks.
-
-*   `--draft, --draft-n, --draft-max N`: The absolute maximum token count the draft model is permitted to heuristically project ahead of the verification model.
-*   `--draft-min, --draft-n-min N`: The minimum threshold of speculative tokens required before invoking the verification batch.
-*   `--draft-p-min P`: Dictates the minimum greedy probability threshold the draft model must satisfy to permit a speculative token into the verification queue.
-*   `--spec-replace TARGET DRAFT`: An explicit string replacement mapping enabling the architectural compatibility alignment between dissimilar target and draft vocabulary models.
-*   `--spec-type [none|ngram-cache|ngram-simple|ngram-map-k|ngram-map-k4v|ngram-mod]`: When an external neural draft model is absent, this engages heuristic, statistical caching algorithms (e.g., $N$-gram sequence mapping) to serve as the speculative drafting engine.
-*   `--spec-ngram-size-n N`: Defines the scalar dimension $N$ for the $N$-gram prefix lookup window.
-*   `--spec-ngram-size-m N`: Defines the scalar dimension $M$ for the $M$-gram speculative generation window.
-*   `--spec-ngram-min-hits N`: The mathematical minimal collision threshold necessary within the $N$-gram map to trigger a successful speculative projection.
-
-## 10. HTTP Network Binding & API Endpoint Management
-
-Controls for the asynchronous network event loop, socket routing, and security authentication protocols.
-
-*   `--host HOST`, `--port PORT`: Defines the strictly bound IPv4/IPv6 interface and TCP port. Supports mapping directly to `*.sock` references for low-latency Inter-Process Communication via UNIX domain sockets.
-*   `--path PATH`: Points the internal HTTP multiplexer to a static directory payload to serve Web UI assets natively.
-*   `--api-prefix PREFIX`: Enforces an arbitrary string prefix upon all RESTful API routes (e.g., mapping routes beneath `/v2/internal/`).
-*   `--api-key KEY`, `--api-key-file FNAME`: Enforces rudimentary HTTP Bearer token validation using explicit string arrays or newline-delimited external files.
-*   `--ssl-key-file FNAME`, `--ssl-cert-file FNAME`: Maps the respective PEM-encoded cryptographic key and certificate artifacts to instantiate encrypted TLS termination natively.
-*   `-to, --timeout N`: Enforces a hard read/write synchronization timeout scalar (in seconds) across the HTTP socket layer.
-*   `--sleep-idle-seconds SECONDS`: Establishes an inactivity countdown trigger that forces the server into a computationally suspended low-power sleep state.
-*   `--metrics`: Instantiates and exposes a dedicated `/metrics` REST endpoint configured for standard Prometheus telemetry scraping logic.
-*   `--props`: Exposes the dangerously powerful `POST /props` endpoint, allowing dynamic, on-the-fly mutations of the global runtime properties schema.
-*   `--slots, --no-slots`: Controls the exposition of the slot-monitoring telemetry via the API mapping logic.
-
-## 11. Multimodal Projection, Web UI, and Formatting
-
-Configurations extending the base LLM into vision, acoustic parsing, agentic tool orchestration, and complex metadata templating.
-
-*   `-mm, --mmproj FILE`, `-mmu, --mmproj-url URL`: Ingests the multimodal projection weight matrix, mathematically bridging disparate latent spaces (e.g., a ViT embedding) directly into the LLM's primary text dimension.
-*   `--mmproj-auto, --no-mmproj, --no-mmproj-auto`: Automatically attempts to locate and integrate a projector file matching the base model repository.
-*   `--mmproj-offload, --no-mmproj-offload`: Forces the spatial projection operations directly into the VRAM of compute accelerators.
-*   `--image-min-tokens N`, `--image-max-tokens N`: Strictly defines sequence dimension constraints explicitly applied to vision inputs to prevent context window saturation from exceedingly high-resolution visual inputs.
-*   `-mv, --model-vocoder FNAME`, `-hfv, -hfrv, --hf-repo-v <user>/<model>[:quant]`, `-hffv, --hf-file-v FILE`: Instructs the ingestion of specific vocoder neural weights necessary to materialize Text-To-Speech (TTS) matrices into audible acoustic outputs.
-*   `--tts-use-guide-tokens`: Prompts the TTS architecture to leverage embedded structural guide tokens to heavily influence the acoustic intonation and cadence.
-*   `-a, --alias STRING`: Injects a custom nomenclature string utilized across the OpenAI-compatible `/v1/models` route mapping.
-*   `--tags STRING`: A comma-delimited metadata array appended for informational aggregation contexts.
-*   `--webui-config JSON`, `--webui-config-file PATH`: Enforces a pre-ordained JSON layout over the internal Web UI logic, overriding client-side defaults.
-*   `--webui-mcp-proxy, --no-webui-mcp-proxy`: Evaluates an experimental MCP CORS proxy pass-through mechanism—fundamentally insecure outside of tightly trusted environments.
-*   `--webui, --no-webui`: Entirely enables or purges the internal HTTP Web UI server logic.
-*   `--embedding, --embeddings`: Locks the server architecture exclusively into embedding generation mode, rejecting all auto-regressive generation queries.
-*   `--rerank, --reranking`: Activates the cross-encoder re-ranking endpoints.
-*   `--models-dir PATH`, `--models-preset PATH`, `--models-max N`, `--models-autoload, --no-models-autoload`: Parameters explicitly governing router-server topologies, managing concurrent model multiplexing and automatic hot-swapping schemas.
-*   `--jinja, --no-jinja`: Enables the advanced Python Jinja templating parser engine to evaluate structural system prompts natively.
-*   `--chat-template JINJA_TEMPLATE`, `--chat-template-file JINJA_TEMPLATE_FILE`: Overrides the GGUF header's native template assumption with a rigidly defined string layout (e.g., `chatml`, `llama3`) or reads identical logic from an external file artifact.
-*   `--chat-template-kwargs STRING`: Accepts a rigidly formatted JSON string to inject dynamic, arbitrary variable declarations into the Jinja rendering pipeline.
-*   `--reasoning-format FORMAT`: Imposes an extraction schema onto specific intermediary agentic outputs (like DeepSeek `<think>` tokens), explicitly determining whether reasoning blocks are dumped raw or mapped out specifically into distinct `reasoning_content` JSON payloads.
-*   `--reasoning-budget N`: Exerts a mathematical constraint upon the depth and token length the internal reasoning routines are allowed to evaluate.
-*   `--prefill-assistant, --no-prefill-assistant`: Manipulates the parsing behavior of requests where the final message originates from the `assistant` role, dictating whether to trigger auto-regressive continuation (prefill) or treat it strictly as terminal context.
-*   `-r, --reverse-prompt PROMPT`: Establishes a rigid, string-matched halting condition that acts identical to an EOS token trigger.
-*   `-sp, --special`: Exposes special tokens (such as `BOS`, `EOS`, or `<|im_start|>`) natively in the generated HTTP string payload.
-*   `--warmup, --no-warmup`: Executes a silent, empty compute graph operation upon instantiation to explicitly prime GPU caches and force internal JIT kernel compilations before network exposure.
-*   `--spm-infill`: Modifies architectural structural generation targeting from the default Prefix/Suffix/Middle paradigm into the explicit Suffix/Prefix/Middle (SPM) architecture commonly leveraged by distinct codebase completion models.
-*   `-e, --escape, --no-escape`: Toggles standard regular expression parsing mechanisms over string variables (e.g., translating literal `\n` to native newlines).
-*   `--pooling {none,mean,cls,last,rank}`: Mandates the mathematical aggregation pooling architecture specifically applied during embedding calculations, collapsing latent dimensional arrays into singular dense vectors via mathematical means.
+-lcs,  --lookup-cache-static FNAME      path to static lookup cache to use for lookup decoding (not updated by
+                                        generation)
+-lcd,  --lookup-cache-dynamic FNAME     path to dynamic lookup cache to use for lookup decoding (updated by
+                                        generation)
+-ctxcp, --ctx-checkpoints, --swa-checkpoints N
+                                        max number of context checkpoints to create per slot (default:
+                                        32)[(more info)](https://github.com/ggml-org/llama.cpp/pull/15293)
+                                        (env: LLAMA_ARG_CTX_CHECKPOINTS)
+-cpent, --checkpoint-every-n-tokens N   create a checkpoint every n tokens during prefill (processing), -1 to
+                                        disable (default: 8192)
+                                        (env: LLAMA_ARG_CHECKPOINT_EVERY_NT)
+-cram, --cache-ram N                    set the maximum cache size in MiB (default: 8192, -1 - no limit, 0 -
+                                        disable)[(more
+                                        info)](https://github.com/ggml-org/llama.cpp/pull/16391)
+                                        (env: LLAMA_ARG_CACHE_RAM)
+-kvu,  --kv-unified, -no-kvu, --no-kv-unified
+                                        use single unified KV buffer shared across all sequences (default:
+                                        enabled if number of slots is auto)
+                                        (env: LLAMA_ARG_KV_UNIFIED)
+--clear-idle, --no-clear-idle           save and clear idle slots on new task (default: enabled, requires
+                                        unified KV and cache-ram)
+                                        (env: LLAMA_ARG_CLEAR_IDLE)
+--context-shift, --no-context-shift     whether to use context shift on infinite text generation (default:
+                                        disabled)
+                                        (env: LLAMA_ARG_CONTEXT_SHIFT)
+-r,    --reverse-prompt PROMPT          halt generation at PROMPT, return control in interactive mode
+-sp,   --special                        special tokens output enabled (default: false)
+--warmup, --no-warmup                   whether to perform warmup with an empty run (default: enabled)
+--spm-infill                            use Suffix/Prefix/Middle pattern for infill (instead of
+                                        Prefix/Suffix/Middle) as some models prefer this. (default: disabled)
+--pooling {none,mean,cls,last,rank}     pooling type for embeddings, use model default if unspecified
+                                        (env: LLAMA_ARG_POOLING)
+-np,   --parallel N                     number of server slots (default: -1, -1 = auto)
+                                        (env: LLAMA_ARG_N_PARALLEL)
+-cb,   --cont-batching, -nocb, --no-cont-batching
+                                        whether to enable continuous batching (a.k.a dynamic batching)
+                                        (default: enabled)
+                                        (env: LLAMA_ARG_CONT_BATCHING)
+-mm,   --mmproj FILE                    path to a multimodal projector file. see tools/mtmd/README.md
+                                        note: if -hf is used, this argument can be omitted
+                                        (env: LLAMA_ARG_MMPROJ)
+-mmu,  --mmproj-url URL                 URL to a multimodal projector file. see tools/mtmd/README.md
+                                        (env: LLAMA_ARG_MMPROJ_URL)
+--mmproj-auto, --no-mmproj, --no-mmproj-auto
+                                        whether to use multimodal projector file (if available), useful when
+                                        using -hf (default: enabled)
+                                        (env: LLAMA_ARG_MMPROJ_AUTO)
+--mmproj-offload, --no-mmproj-offload   whether to enable GPU offloading for multimodal projector (default:
+                                        enabled)
+                                        (env: LLAMA_ARG_MMPROJ_OFFLOAD)
+--image-min-tokens N                    minimum number of tokens each image can take, only used by vision
+                                        models with dynamic resolution (default: read from model)
+                                        (env: LLAMA_ARG_IMAGE_MIN_TOKENS)
+--image-max-tokens N                    maximum number of tokens each image can take, only used by vision
+                                        models with dynamic resolution (default: read from model)
+                                        (env: LLAMA_ARG_IMAGE_MAX_TOKENS)
+-otd,  --override-tensor-draft <tensor name pattern>=<buffer type>,...
+                                        override tensor buffer type for draft model
+-cmoed, --cpu-moe-draft                 keep all Mixture of Experts (MoE) weights in the CPU for the draft
+                                        model
+                                        (env: LLAMA_ARG_CPU_MOE_DRAFT)
+-ncmoed, --n-cpu-moe-draft N            keep the Mixture of Experts (MoE) weights of the first N layers in the
+                                        CPU for the draft model
+                                        (env: LLAMA_ARG_N_CPU_MOE_DRAFT)
+-a,    --alias STRING                   set model name aliases, comma-separated (to be used by API)
+                                        (env: LLAMA_ARG_ALIAS)
+--tags STRING                           set model tags, comma-separated (informational, not used for routing)
+                                        (env: LLAMA_ARG_TAGS)
+--host HOST                             ip address to listen, or bind to an UNIX socket if the address ends
+                                        with .sock (default: 127.0.0.1)
+                                        (env: LLAMA_ARG_HOST)
+--port PORT                             port to listen (default: 8080)
+                                        (env: LLAMA_ARG_PORT)
+--reuse-port                            allow multiple sockets to bind to the same port (default: disabled)
+                                        (env: LLAMA_ARG_REUSE_PORT)
+--path PATH                             path to serve static files from (default: )
+                                        (env: LLAMA_ARG_STATIC_PATH)
+--api-prefix PREFIX                     prefix path the server serves from, without the trailing slash
+                                        (default: )
+                                        (env: LLAMA_ARG_API_PREFIX)
+--webui-config JSON                     JSON that provides default WebUI settings (overrides WebUI defaults)
+                                        (env: LLAMA_ARG_WEBUI_CONFIG)
+--webui-config-file PATH                JSON file that provides default WebUI settings (overrides WebUI
+                                        defaults)
+                                        (env: LLAMA_ARG_WEBUI_CONFIG_FILE)
+--webui-mcp-proxy, --no-webui-mcp-proxy
+                                        experimental: whether to enable MCP CORS proxy - do not enable in
+                                        untrusted environments (default: disabled)
+                                        (env: LLAMA_ARG_WEBUI_MCP_PROXY)
+--tools TOOL1,TOOL2,...                 experimental: whether to enable built-in tools for AI agents - do not
+                                        enable in untrusted environments (default: no tools)
+                                        specify "all" to enable all tools
+                                        available tools: read_file, file_glob_search, grep_search,
+                                        exec_shell_command, write_file, edit_file, apply_diff
+                                        (env: LLAMA_ARG_TOOLS)
+--webui, --no-webui                     whether to enable the Web UI (default: enabled)
+                                        (env: LLAMA_ARG_WEBUI)
+--embedding, --embeddings               restrict to only support embedding use case; use only with dedicated
+                                        embedding models (default: disabled)
+                                        (env: LLAMA_ARG_EMBEDDINGS)
+--rerank, --reranking                   enable reranking endpoint on server (default: disabled)
+                                        (env: LLAMA_ARG_RERANKING)
+--api-key KEY                           API key to use for authentication, multiple keys can be provided as a
+                                        comma-separated list (default: none)
+                                        (env: LLAMA_API_KEY)
+--api-key-file FNAME                    path to file containing API keys (default: none)
+--ssl-key-file FNAME                    path to file a PEM-encoded SSL private key
+                                        (env: LLAMA_ARG_SSL_KEY_FILE)
+--ssl-cert-file FNAME                   path to file a PEM-encoded SSL certificate
+                                        (env: LLAMA_ARG_SSL_CERT_FILE)
+--chat-template-kwargs STRING           sets additional params for the json template parser, must be a valid
+                                        json object string, e.g. '{"key1":"value1","key2":"value2"}'
+                                        (env: LLAMA_CHAT_TEMPLATE_KWARGS)
+-to,   --timeout N                      server read/write timeout in seconds (default: 600)
+                                        (env: LLAMA_ARG_TIMEOUT)
+--threads-http N                        number of threads used to process HTTP requests (default: -1)
+                                        (env: LLAMA_ARG_THREADS_HTTP)
+--cache-prompt, --no-cache-prompt       whether to enable prompt caching (default: enabled)
+                                        (env: LLAMA_ARG_CACHE_PROMPT)
+--cache-reuse N                         min chunk size to attempt reusing from the cache via KV shifting,
+                                        requires prompt caching to be enabled (default: 0)
+                                        [(card)](https://ggml.ai/f0.png)
+                                        (env: LLAMA_ARG_CACHE_REUSE)
+--metrics                               enable prometheus compatible metrics endpoint (default: disabled)
+                                        (env: LLAMA_ARG_ENDPOINT_METRICS)
+--props                                 enable changing global properties via POST /props (default: disabled)
+                                        (env: LLAMA_ARG_ENDPOINT_PROPS)
+--slots, --no-slots                     expose slots monitoring endpoint (default: enabled)
+                                        (env: LLAMA_ARG_ENDPOINT_SLOTS)
+--slot-save-path PATH                   path to save slot kv cache (default: disabled)
+--media-path PATH                       directory for loading local media files; files can be accessed via
+                                        file:// URLs using relative paths (default: disabled)
+--models-dir PATH                       directory containing models for the router server (default: disabled)
+                                        (env: LLAMA_ARG_MODELS_DIR)
+--models-preset PATH                    path to INI file containing model presets for the router server
+                                        (default: disabled)
+                                        (env: LLAMA_ARG_MODELS_PRESET)
+--models-max N                          for router server, maximum number of models to load simultaneously
+                                        (default: 4, 0 = unlimited)
+                                        (env: LLAMA_ARG_MODELS_MAX)
+--models-autoload, --no-models-autoload
+                                        for router server, whether to automatically load models (default:
+                                        enabled)
+                                        (env: LLAMA_ARG_MODELS_AUTOLOAD)
+--jinja, --no-jinja                     whether to use jinja template engine for chat (default: enabled)
+                                        (env: LLAMA_ARG_JINJA)
+--reasoning-format FORMAT               controls whether thought tags are allowed and/or extracted from the
+                                        response, and in which format they're returned; one of:
+                                        - none: leaves thoughts unparsed in `message.content`
+                                        - deepseek: puts thoughts in `message.reasoning_content`
+                                        - deepseek-legacy: keeps `<think>` tags in `message.content` while
+                                        also populating `message.reasoning_content`
+                                        (default: auto)
+                                        (env: LLAMA_ARG_THINK)
+-rea,  --reasoning [on|off|auto]        Use reasoning/thinking in the chat ('on', 'off', or 'auto', default:
+                                        'auto' (detect from template))
+                                        (env: LLAMA_ARG_REASONING)
+--reasoning-budget N                    token budget for thinking: -1 for unrestricted, 0 for immediate end,
+                                        N>0 for token budget (default: -1)
+                                        (env: LLAMA_ARG_THINK_BUDGET)
+--reasoning-budget-message MESSAGE      message injected before the end-of-thinking tag when reasoning budget
+                                        is exhausted (default: none)
+                                        (env: LLAMA_ARG_THINK_BUDGET_MESSAGE)
+--chat-template JINJA_TEMPLATE          set custom jinja chat template (default: template taken from model's
+                                        metadata)
+                                        if suffix/prefix are specified, template will be disabled
+                                        only commonly used templates are accepted (unless --jinja is set
+                                        before this flag):
+                                        list of built-in templates:
+                                        bailing, bailing-think, bailing2, chatglm3, chatglm4, chatml,
+                                        command-r, deepseek, deepseek-ocr, deepseek2, deepseek3, exaone-moe,
+                                        exaone3, exaone4, falcon3, gemma, gigachat, glmedge, gpt-oss, granite,
+                                        granite-4.0, grok-2, hunyuan-dense, hunyuan-moe, hunyuan-ocr, kimi-k2,
+                                        llama2, llama2-sys, llama2-sys-bos, llama2-sys-strip, llama3, llama4,
+                                        megrez, minicpm, mistral-v1, mistral-v3, mistral-v3-tekken,
+                                        mistral-v7, mistral-v7-tekken, monarch, openchat, orion,
+                                        pangu-embedded, phi3, phi4, rwkv-world, seed_oss, smolvlm, solar-open,
+                                        vicuna, vicuna-orca, yandex, zephyr
+                                        (env: LLAMA_ARG_CHAT_TEMPLATE)
+--chat-template-file JINJA_TEMPLATE_FILE
+                                        set custom jinja chat template file (default: template taken from
+                                        model's metadata)
+                                        if suffix/prefix are specified, template will be disabled
+                                        only commonly used templates are accepted (unless --jinja is set
+                                        before this flag):
+                                        list of built-in templates:
+                                        bailing, bailing-think, bailing2, chatglm3, chatglm4, chatml,
+                                        command-r, deepseek, deepseek-ocr, deepseek2, deepseek3, exaone-moe,
+                                        exaone3, exaone4, falcon3, gemma, gigachat, glmedge, gpt-oss, granite,
+                                        granite-4.0, grok-2, hunyuan-dense, hunyuan-moe, hunyuan-ocr, kimi-k2,
+                                        llama2, llama2-sys, llama2-sys-bos, llama2-sys-strip, llama3, llama4,
+                                        megrez, minicpm, mistral-v1, mistral-v3, mistral-v3-tekken,
+                                        mistral-v7, mistral-v7-tekken, monarch, openchat, orion,
+                                        pangu-embedded, phi3, phi4, rwkv-world, seed_oss, smolvlm, solar-open,
+                                        vicuna, vicuna-orca, yandex, zephyr
+                                        (env: LLAMA_ARG_CHAT_TEMPLATE_FILE)
+--skip-chat-parsing, --no-skip-chat-parsing
+                                        force a pure content parser, even if a Jinja template is specified;
+                                        model will output everything in the content section, including any
+                                        reasoning and/or tool calls (default: disabled)
+                                        (env: LLAMA_ARG_SKIP_CHAT_PARSING)
+--prefill-assistant, --no-prefill-assistant
+                                        whether to prefill the assistant's response if the last message is an
+                                        assistant message (default: prefill enabled)
+                                        when this flag is set, if the last message is an assistant message
+                                        then it will be treated as a full message and not prefilled
+                                        
+                                        (env: LLAMA_ARG_PREFILL_ASSISTANT)
+-sps,  --slot-prompt-similarity SIMILARITY
+                                        how much the prompt of a request must match the prompt of a slot in
+                                        order to use that slot (default: 0.10, 0.0 = disabled)
+--lora-init-without-apply               load LoRA adapters without applying them (apply later via POST
+                                        /lora-adapters) (default: disabled)
+--sleep-idle-seconds SECONDS            number of seconds of idleness after which the server will sleep
+                                        (default: -1; -1 = disabled)
+-td,   --threads-draft N                number of threads to use during generation (default: same as
+                                        --threads)
+-tbd,  --threads-batch-draft N          number of threads to use during batch and prompt processing (default:
+                                        same as --threads-draft)
+--draft, --draft-n, --draft-max N       number of tokens to draft for speculative decoding (default: 16)
+                                        (env: LLAMA_ARG_DRAFT_MAX)
+--draft-min, --draft-n-min N            minimum number of draft tokens to use for speculative decoding
+                                        (default: 0)
+                                        (env: LLAMA_ARG_DRAFT_MIN)
+--draft-p-min P                         minimum speculative decoding probability (greedy) (default: 0.75)
+                                        (env: LLAMA_ARG_DRAFT_P_MIN)
+-cd,   --ctx-size-draft N               size of the prompt context for the draft model (default: 0, 0 = loaded
+                                        from model)
+                                        (env: LLAMA_ARG_CTX_SIZE_DRAFT)
+-devd, --device-draft <dev1,dev2,..>    comma-separated list of devices to use for offloading the draft model
+                                        (none = don't offload)
+                                        use --list-devices to see a list of available devices
+-ngld, --gpu-layers-draft, --n-gpu-layers-draft N
+                                        max. number of draft model layers to store in VRAM, either an exact
+                                        number, 'auto', or 'all' (default: auto)
+                                        (env: LLAMA_ARG_N_GPU_LAYERS_DRAFT)
+-md,   --model-draft FNAME              draft model for speculative decoding (default: unused)
+                                        (env: LLAMA_ARG_MODEL_DRAFT)
+--spec-replace TARGET DRAFT             translate the string in TARGET into DRAFT if the draft model and main
+                                        model are not compatible
+--spec-type [none|ngram-cache|ngram-simple|ngram-map-k|ngram-map-k4v|ngram-mod]
+                                        type of speculative decoding to use when no draft model is provided
+                                        (default: none)
+                                        
+                                        (env: LLAMA_ARG_SPEC_TYPE)
+--spec-ngram-size-n N                   ngram size N for ngram-simple/ngram-map speculative decoding, length
+                                        of lookup n-gram (default: 12)
+--spec-ngram-size-m N                   ngram size M for ngram-simple/ngram-map speculative decoding, length
+                                        of draft m-gram (default: 48)
+--spec-ngram-min-hits N                 minimum hits for ngram-map speculative decoding (default: 1)
+-mv,   --model-vocoder FNAME            vocoder model for audio generation (default: unused)
+--tts-use-guide-tokens                  Use guide tokens to improve TTS word recall
+--embd-gemma-default                    use default EmbeddingGemma model (note: can download weights from the
+                                        internet)
+--fim-qwen-1.5b-default                 use default Qwen 2.5 Coder 1.5B (note: can download weights from the
+                                        internet)
+--fim-qwen-3b-default                   use default Qwen 2.5 Coder 3B (note: can download weights from the
+                                        internet)
+--fim-qwen-7b-default                   use default Qwen 2.5 Coder 7B (note: can download weights from the
+                                        internet)
+--fim-qwen-7b-spec                      use Qwen 2.5 Coder 7B + 0.5B draft for speculative decoding (note: can
+                                        download weights from the internet)
+--fim-qwen-14b-spec                     use Qwen 2.5 Coder 14B + 0.5B draft for speculative decoding (note:
+                                        can download weights from the internet)
+--fim-qwen-30b-default                  use default Qwen 3 Coder 30B A3B Instruct (note: can download weights
+                                        from the internet)
+--gpt-oss-20b-default                   use gpt-oss-20b (note: can download weights from the internet)
+--gpt-oss-120b-default                  use gpt-oss-120b (note: can download weights from the internet)
+--vision-gemma-4b-default               use Gemma 3 4B QAT (note: can download weights from the internet)
+--vision-gemma-12b-default              use Gemma 3 12B QAT (note: can download weights from the internet)
+```
