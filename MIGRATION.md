@@ -19,12 +19,15 @@ The `Makefile` provides a single entry point for all build, run, and maintenance
 | **Clean Build** | `rm -rf ~/workspace/machine-learning/llama.cpp/build` | `make clean` |
 | **Update llama.cpp** | `./scripts/update_llama_cpp.sh` | `make update` |
 | **Start Server** | `./scripts/run-server.sh` | `make server` |
+| **Start Server (tmux)**| `./scripts/start-server-tmux.sh` | `make server-tmux` |
 | **Stop Server** | `./scripts/stop-server-tmux.sh` | `make stop` |
+| **Stop tmux session** | `./scripts/stop-server-tmux.sh` | `make stop-tmux` |
 | **Docker Up** | `docker-compose up -d` | `make docker-up` |
 | **Docker Down** | `docker-compose down` | `make docker-down` |
 | **Lint Scripts** | `find scripts/ -name "*.sh" -exec shellcheck {} +` | `make lint` |
 | **Test Syntax** | `bash -n scripts/*.sh` | `make test` |
 | **Full Validation** | `bash -n scripts/*.sh && find scripts/ -name "*.sh" -exec shellcheck {} +` | `make validate` |
+| **Open Port** | `./scripts/ensure-port-open.sh` | `make port-open` |
 
 ## Transitioning
 

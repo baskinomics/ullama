@@ -35,6 +35,16 @@ This file provides instructions for AI agents operating in the Ullama repository
 - **Stop services**: `make docker-down` or `docker-compose down`
 - **View logs**: `make docker-logs` or `docker-compose logs -f openwebui`
 
+### 1.5 Server Management (tmux)
+
+- **Start server (tmux)**: `make server-tmux`
+- **Stop server (tmux)**: `make stop`
+- **Stop tmux session**: `make stop-tmux`
+
+### 1.6 Maintenance
+
+- **Ensure port is open**: `make port-open`
+
 
 ## 2. Code Style Guidelines
 
