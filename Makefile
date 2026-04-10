@@ -1,4 +1,4 @@
-.PHONY: help build clean update server server-debug stop docker-up docker-down docker-logs lint test validate
+.PHONY: help build clean update server server-debug server-tmux stop stop-tmux docker-up docker-down docker-logs lint test validate port-open
 
 # Colors for help output
 BLUE = \033[1;34m
@@ -30,7 +30,13 @@ server: ## Start llama-server with router
 server-debug: ## Start with debug logging
 	./scripts/run-server.sh --log-colors on
 
+server-tmux: ## Start llama-server in a tmux session (for remote access)
+	./scripts/start-server-tmux.sh
+
 stop: ## Stop running services (tmux session)
+	./scripts/stop-server-tmux.sh
+
+stop-tmux: ## Stop the tmux server session
 	./scripts/stop-server-tmux.sh
 
 # --- Docker Targets ---
@@ -54,3 +60,6 @@ test: ## Test script syntax
 
 validate: ## Full validation pipeline
 	bash -n scripts/*.sh && find scripts/ -name "*.sh" -exec shellcheck {} +
+
+port-open: ## Ensure the server port (8001) is open in the firewall
+	./scripts/ensure-port-open.sh
