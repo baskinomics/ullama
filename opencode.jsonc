@@ -4,7 +4,8 @@
     "default_agent": "plan",
     // Permissions
     "permission": {
-        "webfetch": "allow"
+        "webfetch": "allow",
+        "question": "allow",
     },
     // Providers
     "enabled_providers": [
