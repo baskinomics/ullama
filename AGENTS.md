@@ -54,80 +54,19 @@ This file provides instructions for AI agents operating in the Ullama repository
 ## 2. Code Style Guidelines
 
 ### 2.1 Bash Scripting
-
-Follow Google Shell Style Guide with project adaptations.
-
-#### Shebang and Safety
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-```
-
-#### Structure Pattern
-All scripts should use a `main()` function pattern:
-```bash
-log() {
-    echo -e "\033[1;34m==>\033[0m $*"
-}
-
-err() {
-    echo -e "\033[1;31mERROR:\033[0m $*" >&2
-    exit 1
-}
-
-main() {
-    local var_name="value"
-    [[ -d "${PATH}" ]] || err "Path not found: ${PATH}"
-    # ... logic
-}
-
-main "$@"
-```
-
-#### Variables
-- Use `readonly` for constants: `readonly TARGET_DIR="..."`
-- Use `local` for function-scoped variables
-- Always quote expansions: `"$variable"`
-- Use arrays for command arguments: `ARGS=(--flag1 --flag2)`
-
-#### Functions
-- Use `name() {` syntax (no `function` keyword)
-- Place `local` declarations at function start
-- Return exit codes with `return N` or `exit N`
-
-#### Error Handling
-- Use `set -euo pipefail` for strict mode
-- Handle expected failures with `||`:
-  ```bash
-  git rebase origin/master || err "Rebase failed"
-  ```
-- Validate prerequisites early with `[[ condition ]] || err "message"`
-
-#### Logging
-- Use `log()` for info messages (stdout, blue)
-- Use `err()` for errors (stderr, red, exits)
-- Keep stdout clean for script output consumption
+Follow Google Shell Style Guide with these project-specific requirements:
+- **Safety:** Use `#!/usr/bin/env bash` and `set -euo pipefail`.
+- **Structure:** Use a `main() { ... }` function pattern called at the end: `main "$@"`.
+- **Variables:** `readonly` for constants, `local` for function scope, always quote expansions `"$var"`.
+- **Arguments:** Use arrays for command arguments (e.g., `ARGS=(--flag1 --flag2)`).
+- **Functions:** Use `name() {` syntax (no `function` keyword).
+- **Error Handling:** Use `[[ condition ]] || err "message"` for early validation.
+- **Logging:** Use `log()` for info (blue) and `err()` for errors (red, exits).
 
 ### 2.2 Formatting
-
-- **Indentation**: 2 spaces, no tabs
-- **Line length**: Max 80 chars (preferable), 100 max
-- **Quotes**: Always `"$var"` not `$var`
-- **Arrays**: Multi-line for readability
-  ```bash
-  ROUTER_ARGS=(
-      --models-preset "$PRESET_FILE"
-      --models-max 1
-      --port 8001
-  )
-  ```
-
-### 2.3 File Organization
-
-- Scripts live in `scripts/`
-- Use descriptive lowercase names: `update_llama_cpp.sh`
-- Include purpose header comment at top of each script
-- End files with newline, no trailing whitespace
+- **Indentation:** 2 spaces.
+- **Line Length:** Max 80-100 chars.
+- **Organization:** Scripts in `scripts/`, descriptive lowercase names, purpose header at top.
 
 ## 3. Common Patterns
 
