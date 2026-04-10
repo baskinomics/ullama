@@ -26,9 +26,10 @@ LOG_FILE="${SCRIPT_DIR}/logs/server.log"
 ROUTER_ARGS=(
     --models-preset "$PRESET_FILE"
     --models-max 1
+    --parallel 1
     --port 8001
     --log-file "$LOG_FILE"
-    --log-colors off
+    --log-colors on
 )
 
 mkdir -p "$(dirname "$LOG_FILE")"
