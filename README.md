@@ -49,6 +49,12 @@ docker-compose up -d
 
 Open your browser at **http://localhost:3000** to start chatting. The router server will automatically load models based on your requests.
 
+### Remote Server Access (Advanced)
+
+For running the server on a remote machine (e.g., `jupiter`) while accessing from your local machine, see the [Remote Server Access documentation](scripts/README.md#advanced-remote-server-access-temporary-solution).
+
+> **Note:** This is a temporary workaround until the systemd service implementation is complete. See [`docs/specs/systemd-plan.md`](docs/specs/systemd-plan.md).
+
 ## Available Models
 
 Models are configured via preset files (`presets.ini` for Linux, `macos-presets.ini` for macOS). The router server automatically manages model loading based on requests.

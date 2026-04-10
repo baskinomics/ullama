@@ -122,3 +122,14 @@ All commit messages should follow [Conventional Commits](https://www.conventiona
 | Start services | `docker-compose up -d` |
 | Stop services | `docker-compose down` |
 | Update context | `./scripts/update_agent_context.sh` |
+
+### SSH + tmux Remote Access
+
+For remote server access (temporary until systemd implementation):
+
+- **Start:** `./scripts/start-server-tmux.sh`
+- **Attach:** `tmux attach -t ullama-server`
+- **Stop:** `tmux kill-session -t ullama-server`
+- **API Endpoint:** `http://<hostname>:8001/v1`
+
+See `scripts/README.md` for full documentation.
