@@ -16,48 +16,46 @@
             "npm": "@ai-sdk/openai-compatible",
             "name": "llama-server",
             "options": {
-                "baseURL": "http://127.0.0.1:8001/v1"
+                "baseURL": "http://127.0.0.1:8001/v1",
             },
             // Models
             "models": {
+                "unsloth/Qwen3.5-122B-A10B": {
+                    "name": "unsloth/Qwen3.5-122B-A10B",
+                    "limit": {
+                        "context": 65536,
+                        "output": 32768,
+                    },
+                },
                 "unsloth/Qwen3.5-27B": {
                     "name": "unsloth/Qwen3.5-27B",
                     "limit": {
                         "context": 65536,
-                        "output": 32768
-                    }
+                        "output": 32768,
+                    },
                 },
                 "unsloth/Qwen3-Coder-Next": {
                     "name": "unsloth/Qwen3-Coder-Next",
                     "limit": {
                         "context": 262144,
-                        "output": 32768
-                    }
+                        "output": 32768,
+                    },
                 },
                 "unsloth/Gemma-4-31B": {
                     "name": "unsloth/Gemma-4-31B",
                     "limit": {
                         "context": 65536,
-                        "output": 32768
-                    }
+                        "output": 32768,
+                    },
                 },
                 "unsloth/Gemma-4-26B-A4B": {
                     "name": "unsloth/Gemma-4-26B-A4B",
                     "limit": {
-                        "context": 65536,
-                        //"context": 65536,
-                        "output": 32768,
-                        // "output": 32768
-                    }
+                        "context": 262144,
+                        "output": 65536,
+                    },
                 },
-                // "unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_XL": {
-                //     "name": "unsloth/gemma-4-26B-A4B (UD-Q4_K_XL)",
-                //     "limit": {
-                //         "context": 32768,
-                //         "output": 32768
-                //     }
-                // }
-            }
-        }
-    }
+            },
+        },
+    },
 }
