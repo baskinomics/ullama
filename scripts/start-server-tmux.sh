@@ -24,14 +24,6 @@ if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
     exit 0
 fi
 
-# Check if port 8001 is open in firewall
-if ! sudo ufw status | grep -q "${PORT}/tcp"; then
-    log "Port $PORT is not open in firewall."
-    echo "Opening port $PORT... (requires sudo password)"
-    sudo ufw allow "${PORT}/tcp" || err "Failed to open port $PORT"
-    log "Port $PORT opened successfully."
-fi
-
 log "Creating new tmux session: $SESSION_NAME"
 log "Starting llama-server with host 0.0.0.0:$PORT..."
 
