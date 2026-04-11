@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/utils/logging.sh"
+
 readonly DEFAULT_PORT=8001
-
-log() {
-    echo -e "\033[0;34m[INFO]\033[0m $1"
-}
-
-err() {
-    echo -e "\033[0;31m[ERROR]\033[0m $1" >&2
-    exit 1
-}
 
 usage() {
     echo "Usage: $0 [port]"
@@ -27,3 +21,4 @@ main() {
 }
 
 main "$@"
+
