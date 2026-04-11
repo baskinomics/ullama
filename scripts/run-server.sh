@@ -5,6 +5,8 @@ set -euo pipefail
 # Leverages Router Mode and Presets for dynamic model management.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/utils/logging.sh"
+
 OS_TYPE=$(uname -s)
 
 # Select appropriate preset based on OS
@@ -34,12 +36,12 @@ ROUTER_ARGS=(
 
 mkdir -p "$(dirname "$LOG_FILE")"
 
-echo "=== Starting Ullama Router Server ==="
+log "Starting Ullama Router Server"
 echo "OS Detected: $OS_TYPE"
 echo "Using Preset: $PRESET_FILE"
 echo "Log File: $LOG_FILE"
 echo "Command: $CMD_PREFIX llama-server ${ROUTER_ARGS[*]}"
-echo "======================================"
 
 # Execute llama-server
 $CMD_PREFIX llama-server "${ROUTER_ARGS[@]}" "$@"
+

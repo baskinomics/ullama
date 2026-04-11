@@ -2,17 +2,10 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/utils/logging.sh"
+
 SESSION_NAME="ullama-server"
 PORT=8001
-
-log() {
-    echo -e "\033[0;34m[INFO]\033[0m $1"
-}
-
-err() {
-    echo -e "\033[0;31m[ERROR]\033[0m $1" >&2
-    exit 1
-}
 
 # Check if session exists
 if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
@@ -42,3 +35,4 @@ echo "  tmux attach -t $SESSION_NAME"
 echo ""
 echo "=== To stop the server ==="
 echo "  tmux kill-session -t $SESSION_NAME"
+

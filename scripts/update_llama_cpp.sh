@@ -1,17 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Use absolute path for SCRIPT_DIR to avoid issues with how dirname handles BASH_SOURCE
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/utils/logging.sh"
+
 readonly TARGET_DIR="${HOME}/workspace/machine-learning/llama.cpp"
 readonly BUILD_DIR="${TARGET_DIR}/build"
-
-log() {
-    echo -e "\033[1;34m==>\033[0m $*"
-}
-
-err() {
-    echo -e "\033[1;31mERROR:\033[0m $*" >&2
-    exit 1
-}
 
 main() {
     [[ -d "${TARGET_DIR}" ]] || err "Directory not found: ${TARGET_DIR}"
@@ -38,3 +33,4 @@ main() {
 }
 
 main "$@"
+
