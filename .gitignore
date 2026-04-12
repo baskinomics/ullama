@@ -18,6 +18,7 @@ Thumbs.db
 
 # Logs
 *.log
+scripts/logs/
 history.txt
 **/*.logs.txt
 **/*-logs.txt
