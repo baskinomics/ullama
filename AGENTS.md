@@ -75,7 +75,7 @@ $CMD_PREFIX llama-server "${ARGS[@]}" "$@"
 ### OS Detection
 ```bash
 OS_TYPE=$(uname -s)
-[[ "$OS_TYPE" = "Darwin" ]] && PRESET_FILE="macos-presets.ini" || PRESET_FILE="presets.ini"
+[[ "$OS_TYPE" = "Darwin" ]] && PRESET_FILE="config/macos-presets.ini" || PRESET_FILE="config/presets.ini"
 ```
 
 ## 4. Commit Message Style

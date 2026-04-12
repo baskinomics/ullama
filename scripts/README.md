@@ -16,8 +16,6 @@ The project has transitioned to a **Router Mode** architecture. Instead of manag
 ```
 scripts/
 ├── run-server.sh            # Unified server entry point (Router Mode)
-├── presets.ini              # Model configurations (Linux)
-├── macos-presets.ini        # Model configurations (macOS)
 ├── update_llama_cpp.sh      # Utility: Update and build llama.cpp
 ├── update_agent_context.sh  # Utility: Generate hardware context (HOST_ENV.md)
 └── install-docker.sh        # Utility: Install Docker with GPU support
@@ -56,10 +54,10 @@ curl http://localhost:8001/v1/models | jq .
 
 ## Configuration (Presets)
 
-Model-specific settings are stored in `scripts/presets.ini` (or `macos-presets.ini`).
+Model-specific settings are stored in `config/presets.ini` (or `config/macos-presets.ini`).
 
 ### Adding a New Model
-1. Open `scripts/presets.ini`.
+1. Open `config/presets.ini`.
 2. Add a new section with the model alias:
    ```ini
    [my-new-model]
@@ -83,7 +81,7 @@ The `[DEFAULT]` section defines settings shared by all models unless overridden:
 - Expects NVIDIA Container Toolkit for GPU acceleration.
 
 ### macOS
-- Uses `macos-presets.ini` with `n-gpu-layers = 999` to ensure full offload to Apple Silicon (Metal).
+- Uses `config/macos-presets.ini` with `n-gpu-layers = 999` to ensure full offload to Apple Silicon (Metal).
 - Automatically adjusts thread counts and memory locking (`mlock`) for better performance on macOS.
 
 ## Utilities

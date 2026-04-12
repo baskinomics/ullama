@@ -23,7 +23,7 @@ huggingface-cli download <REPO_ID> <FILENAME> --local-dir ./models --local-dir-u
 ```
 
 ### 3. Preset Configuration
-Update `scripts/presets.ini` and `scripts/macos-presets.ini` to reference local paths instead of HF URIs.
+Update `config/presets.ini` and `config/macos-presets.ini` to reference local paths instead of HF URIs.
 
 **From:** `model = hf://Qwen/Qwen1.5-7B-Chat-GGUF/qwen1_5-7b-chat-q4_k_m.gguf`
 **To:** `model = ./models/qwen1_5-7b-chat-q4_k_m.gguf`

@@ -11,10 +11,10 @@ OS_TYPE=$(uname -s)
 
 # Select appropriate preset based on OS
 if [ "$OS_TYPE" = "Darwin" ]; then
-    PRESET_FILE="${SCRIPT_DIR}/macos-presets.ini"
+    PRESET_FILE="${SCRIPT_DIR}/../config/macos-presets.ini"
     CMD_PREFIX=""
 else
-    PRESET_FILE="${SCRIPT_DIR}/presets.ini"
+    PRESET_FILE="${SCRIPT_DIR}/../config/presets.ini"
     # taskset -c 0-7 binds the process to the first 8 physical cores (optimal for 3D V-Cache CCD)
     CMD_PREFIX="taskset -c 0-7"
 fi
@@ -35,6 +35,16 @@ ROUTER_ARGS=(
 )
 
 mkdir -p "$(dirname "$LOG_FILE")"
+
+# Log Rotation: Archive current log and keep only the 5 most recent
+if [[ -f "$LOG_FILE" ]]; then
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    mv "$LOG_FILE" "${LOG_FILE}.${TIMESTAMP}"
+    log "Archived old log to ${LOG_FILE}.${TIMESTAMP}"
+fi
+
+# Cleanup: Keep only the 5 most recent log archives
+ls -t "${LOG_FILE}."* 2>/dev/null | tail -n +6 | xargs -r rm
 
 log "Starting Ullama Router Server"
 echo "OS Detected: $OS_TYPE"

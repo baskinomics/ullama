@@ -22,7 +22,7 @@ Ullama is a personal infrastructure-as-code repository for local LLM deployment 
 - **Features:** ChatGPT-like interface, conversation management
 
 ### 3. Preset Configuration
-- **Location:** `scripts/presets.ini` (Linux), `scripts/macos-presets.ini` (macOS)
+- **Location:** `config/presets.ini` (Linux), `config/macos-presets.ini` (macOS)
 - **Purpose:** Define model parameters, quantization, context limits
 - **Structure:** Global defaults + per-model overrides
 
@@ -38,7 +38,7 @@ User Request (WebUI:3000)
     ↓
 Router Server (llama.cpp:8001)
     ↓
-Preset Configuration (presets.ini)
+Preset Configuration (config/presets.ini)
     ↓
 Model Loading (HuggingFace → VRAM)
     ↓
@@ -85,7 +85,7 @@ User Interface (WebUI)
 ### Context Limits
 **Decision:** Layered defense with aligned limits
 - **opencode.json:** `limit.context` = 32768 (safety limit)
-- **presets.ini:** `ctx-size` = 32768 (server rejection threshold)
+- **config/presets.ini:** `ctx-size` = 32768 (server rejection threshold)
 - **Trade-off:** Reduced context window vs. system stability
 - **See:** ADR 0003 for detailed rationale
 

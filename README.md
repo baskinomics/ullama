@@ -112,7 +112,7 @@ For running the server on a remote machine (e.g., `jupiter`) while accessing fro
 
 ## Available Models
 
-Models are configured via preset files (`presets.ini` for Linux, `macos-presets.ini` for macOS). The router server automatically manages model loading based on requests.
+Models are configured via preset files (`config/presets.ini` for Linux, `config/macos-presets.ini` for macOS). The router server automatically manages model loading based on requests.
 
 ### Qwen Models (Alibaba)
 
@@ -157,7 +157,7 @@ Models are configured via preset files (`presets.ini` for Linux, `macos-presets.
 | OmniCoder-9B | Tesslate | Q8_0 | 262K | Coding-focused |
 | gpt-oss-120B | Unsloth | F16 | 32K | Open-source GPT-style |
 
-See [`scripts/presets.ini`](scripts/presets.ini) for the complete configuration.
+See [`config/presets.ini`](config/presets.ini) for the complete configuration.
 
 ## Architecture
 
@@ -171,7 +171,7 @@ graph LR
 
     subgraph "Backend Infrastructure"
         Router["Router Server<br/>(llama.cpp port 8001)"]
-        Presets["Model Presets<br/>(presets.ini)"]
+        Presets["Model Presets<br/>(config/presets.ini)"]
         Loading["Dynamic Model<br/>Loading/Unloading"]
     end
 
@@ -266,11 +266,11 @@ temp = 1.0
 | `fit` | Auto-fit model to GPU memory (on/off) |
 | `flash-attn` | Flash attention for speed (on/off) |
 
-See [`scripts/presets.ini`](scripts/presets.ini) for the complete configuration and [`llama.cpp server docs`](https://github.com/ggml-org/llama.cpp/tree/master/tools/server#model-presets) for all options.
+See [`config/presets.ini`](config/presets.ini) for the complete configuration and [`llama.cpp server docs`](https://github.com/ggml-org/llama.cpp/tree/master/tools/server#model-presets) for all options.
 
 ### Adding New Models
 
-1. Add a new section to `presets.ini`:
+1. Add a new section to `config/presets.ini`:
    ```ini
    [provider/model-name:quantization]
    hf = provider/model-name-GGUF:quantization
@@ -331,7 +331,7 @@ docker-compose restart
 | Docker permission denied | Add user to docker group, reboot |
 | CUDA not detected | Verify `nvcc --version` works |
 | Model fails to load | Check router logs: `tail -f scripts/logs/server.log` |
-| Preset file not found | Verify `presets.ini` exists in `scripts/` directory |
+| Preset file not found | Verify `presets.ini` exists in `config/` directory |
 | Model switching slow | Increase `--models-max` or reduce context size |
 | VRAM OOM errors | Use lower quantization (Q3 vs Q4) or smaller model |
 

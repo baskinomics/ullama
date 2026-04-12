@@ -36,7 +36,7 @@ huggingface-cli download Qwen/Qwen1.5-7B-Chat-GGUF qwen1_5-7b-chat-q4_k_m.gguf -
 
 ## 3. Reconfiguration of the Router Preset Definitions (`.ini`)
 
-The final technical requirement involves meticulously updating both `scripts/presets.ini` and `scripts/macos-presets.ini`. These files must be modified to deprecate any reliance on Hugging Face URI schemes (`hf://`) or the `-hf` auto-download flag abstraction. Instead, they must be strictly configured to reference absolute or correctly resolved relative paths pointing to the locally stored artifacts.
+The final technical requirement involves meticulously updating both `config/presets.ini` and `config/macos-presets.ini`. These files must be modified to deprecate any reliance on Hugging Face URI schemes (`hf://`) or the `-hf` auto-download flag abstraction. Instead, they must be strictly configured to reference absolute or correctly resolved relative paths pointing to the locally stored artifacts.
 
 **Deprecated Approach (Implicit HF Resolution within Preset Configs):**
 ```ini
