@@ -44,7 +44,7 @@
                 "unsloth/Gemma-4-31B": {
                     "name": "unsloth/Gemma-4-31B",
                     "limit": {
-                        "context": 65536,
+                        "context": 131072,
                         "output": 32768,
                     },
                 },
