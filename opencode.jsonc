@@ -16,7 +16,7 @@
             "npm": "@ai-sdk/openai-compatible",
             "name": "llama-server",
             "options": {
-                "baseURL": "http://127.0.0.1:8001/v1",
+                "baseURL": "http://jupiter:8001/v1",
             },
             // Models
             "models": {
