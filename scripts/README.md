@@ -54,7 +54,7 @@ curl http://localhost:8001/v1/models | jq .
 
 ## Configuration (Presets)
 
-Model-specific settings are stored in `config/presets.ini` (or `config/macos-presets.ini`).
+Model-specific settings are stored in `config/presets.ini` (or `config/presets-macos.ini`).
 
 ### Adding a New Model
 1. Open `config/presets.ini`.
@@ -81,7 +81,7 @@ The `[DEFAULT]` section defines settings shared by all models unless overridden:
 - Expects NVIDIA Container Toolkit for GPU acceleration.
 
 ### macOS
-- Uses `config/macos-presets.ini` with `n-gpu-layers = 999` to ensure full offload to Apple Silicon (Metal).
+- Uses `config/presets-macos.ini` with `n-gpu-layers = 999` to ensure full offload to Apple Silicon (Metal).
 - Automatically adjusts thread counts and memory locking (`mlock`) for better performance on macOS.
 
 ## Utilities

@@ -112,7 +112,7 @@ For running the server on a remote machine (e.g., `jupiter`) while accessing fro
 
 ## Available Models
 
-Models are configured via preset files (`config/presets.ini` for Linux, `config/macos-presets.ini` for macOS). The router server automatically manages model loading based on requests.
+Models are configured via preset files (`config/presets.ini` for Linux, `config/presets-macos.ini` for macOS). The router server automatically manages model loading based on requests.
 
 ### Qwen Models (Alibaba)
 

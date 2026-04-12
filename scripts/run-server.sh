@@ -11,7 +11,7 @@ OS_TYPE=$(uname -s)
 
 # Select appropriate preset based on OS
 if [ "$OS_TYPE" = "Darwin" ]; then
-    PRESET_FILE="${SCRIPT_DIR}/../config/macos-presets.ini"
+    PRESET_FILE="${SCRIPT_DIR}/../config/presets-macos.ini"
     CMD_PREFIX=""
 else
     PRESET_FILE="${SCRIPT_DIR}/../config/presets.ini"

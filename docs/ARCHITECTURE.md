@@ -22,7 +22,7 @@ Ullama is a personal infrastructure-as-code repository for local LLM deployment 
 - **Features:** ChatGPT-like interface, conversation management
 
 ### 3. Preset Configuration
-- **Location:** `config/presets.ini` (Linux), `config/macos-presets.ini` (macOS)
+- **Location:** `config/presets.ini` (Linux), `config/presets-macos.ini` (macOS)
 - **Purpose:** Define model parameters, quantization, context limits
 - **Structure:** Global defaults + per-model overrides
 
