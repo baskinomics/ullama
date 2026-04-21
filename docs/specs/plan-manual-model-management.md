@@ -27,9 +27,9 @@ Historically, `llama-server` was permitted to download model assets dynamically 
 mkdir -p models
 
 # Explicitly command the Hugging Face CLI to download the specified GGUF artifact.
-# Qwen/Qwen1.5-7B-Chat-GGUF represents the precise repository namespace and model identifier.
-# qwen1_5-7b-chat-q4_k_m.gguf is the exact filename of the quantized model weight file requested.
-huggingface-cli download Qwen/Qwen1.5-7B-Chat-GGUF qwen1_5-7b-chat-q4_k_m.gguf --local-dir ./models --local-dir-use-symlinks False
+# Replace the repo and filename with the actual values from the mapping table above.
+# Use `huggingface-cli list-repo-files <repo>` to verify the exact filename first.
+huggingface-cli download unsloth/Qwen3.6-35B-A3B-GGUF qwen3.6-35b-a3b-q4_k_xl.gguf --local-dir ./models --local-dir-use-symlinks False
 ```
 
 *Crucial Pedantic Note: The explicit inclusion of `--local-dir-use-symlinks False` is a non-negotiable directive for this architecture. By default, the Hugging Face CLI optimizes disk usage by downloading to a centralized `~/.cache/huggingface/` directory and creating symbolic links (symlinks) to the target directory. In Infrastructure-as-Code (IaC) or containerized environments, symlinks can introduce opaque resolution errors or pathing anomalies. Bypassing symlinks guarantees that the physical binary blob resides exactly where specified.*
@@ -40,25 +40,38 @@ The final technical requirement involves meticulously updating both `config/pres
 
 **Deprecated Approach (Implicit HF Resolution within Preset Configs):**
 ```ini
-[qwen]
+[unsloth/Qwen3.6-35B-A3B]
 # This configuration is considered legacy as it delegates asset resolution to the 
 # runtime engine via external network calls, violating the principle of local determinism.
-model = hf://Qwen/Qwen1.5-7B-Chat-GGUF/qwen1_5-7b-chat-q4_k_m.gguf
-alias = qwen
+hf = unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_XL
 ```
 
 **Modernized Approach (Explicit Local File System Pathing):**
 ```ini
-[qwen]
-# The path must be constructed relative to the Current Working Directory (CWD) from which 
-# the llama-server binary is invoked by the run-server.sh script. Assuming the script is 
-# executed from the project root or the script internally navigates correctly, the path 
-# reflects a traversal to the aforementioned local directory.
-model = ../models/qwen1_5-7b-chat-q4_k_m.gguf
-alias = qwen
+[unsloth/Qwen3.6-35B-A3B]
+# The path is relative to the repository root where run-server.sh is invoked.
+# The `model` field replaces the `hf` field to use a local file instead of remote resolution.
+model = ./models/qwen3.6-35b-a3b-q4_k_xl.gguf
 ```
 
-*(Advisory: The validity of the `../models/` relative path is contingent upon the exact execution context of `llama-server`. Should `run-server.sh` execute `llama-server` directly from within the `scripts/` directory, the `../` traversal is correct. If execution occurs from the repository root, the path must be amended to strictly `./models/` or simply `models/`).*
+*(Advisory: The `./models/` path is relative to the repository root. `run-server.sh` resolves preset paths from the project root context, so `./models/` is correct.)*
+
+Note: `config/presets-macos.ini` requires identical updates for any active model entries, using `model = ./models/<file>` instead of `hf = ...`.
+
+### Model Download Mapping
+
+| Preset Section | HF Repo | Target Quant | Local Filename |
+|---|---|---|---|
+| `unsloth/Qwen3.5-122B-A10B` | `unsloth/Qwen3.5-122B-A10B-GGUF` | Q3_K_XL | `qwen3.5-122b-a10b-q3_k_xl.gguf` |
+| `unsloth/Qwen3.5-27B` | `unsloth/Qwen3.5-27B-GGUF` | Q4_K_XL | `qwen3.5-27b-q4_k_xl.gguf` |
+| `unsloth/Qwen3.6-35B-A3B` | `unsloth/Qwen3.6-35B-A3B-GGUF` | Q4_K_XL | `qwen3.6-35b-a3b-q4_k_xl.gguf` |
+| `unsloth/Gemma-4-31B` | `unsloth/gemma-4-31B-it-GGUF` | Q4_0 | `gemma-4-31b-it-q4_0.gguf` |
+| `unsloth/Gemma-4-26B-A4B` | `unsloth/gemma-4-26B-A4B-it-GGUF` | Q6_K_XL | `gemma-4-26b-a4b-it-q6_k_xl.gguf` |
+
+*Verify exact filenames on HuggingFace before downloading:*
+```bash
+huggingface-cli list-repo-files unsloth/Qwen3.6-35B-A3B-GGUF | grep -i q4_k
+```
 
 ## Comprehensive Summary of Architectural Benefits within Router Mode
 
