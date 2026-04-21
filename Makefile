@@ -1,4 +1,4 @@
-.PHONY: help build clean update server server-debug server-tmux stop stop-tmux docker-up docker-down docker-logs lint test validate port-open
+.PHONY: help build clean update server server-debug server-tmux stop stop-tmux docker-up docker-down docker-logs lint test validate port-open copy-global-config
 
 # Colors for help output
 BLUE = \033[1;34m
@@ -63,3 +63,6 @@ validate: ## Full validation pipeline
 
 port-open: ## Ensure the server port (8001) is open in the firewall
 	./scripts/ensure-port-open.sh
+
+copy-global-config: ## Copy opencode.jsonc to global config location
+	./scripts/copy-global-config.sh
