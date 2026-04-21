@@ -29,6 +29,7 @@ ROUTER_ARGS=(
     --models-preset "$PRESET_FILE"
     --models-max 1
     --parallel 1
+    --no-mmproj
     --port 8001
     --log-file "$LOG_FILE"
     --log-colors on
@@ -54,4 +55,3 @@ echo "Command: $CMD_PREFIX llama-server ${ROUTER_ARGS[*]}"
 
 # Execute llama-server
 $CMD_PREFIX llama-server "${ROUTER_ARGS[@]}" "$@"
-
